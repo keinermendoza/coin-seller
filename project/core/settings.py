@@ -24,6 +24,8 @@ DEBUG = int(os.environ.get("DEBUG", default=0))
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+CSRF_TRUSTED_ORIGINS =  os.environ.get('CSRF_TRUSTED_ORIGINS').split(' ')
+
 
 # Application definition
 
@@ -76,7 +78,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BASE_DIR / "db" / "db.sqlite3",
     }
 }
 
@@ -178,7 +180,7 @@ CELERY_RESULT_BACKEND = "redis://redis:6379"
 CELERY_BEAT_SCHEDULE = {
     "fetch_binance": {
         "task": "tasks.tasks.fetch_binance",
-        "schedule": crontab(minute="*/1"),
+        "schedule": crontab(minute="*/10"),
     },
 }
 

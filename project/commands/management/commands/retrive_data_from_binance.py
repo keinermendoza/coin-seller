@@ -23,22 +23,29 @@ class Command(BaseCommand):
                 **buy_filters
             )
 
-            data = p2p.extract_relevant_data(resp)
-            best_match = data[0] 
-            CurrencyExchangeConditions.objects.create(
-                currency=currency,
-                price=best_match.get("price", ''),
-                publisher_name=best_match.get("nickName", ''),
-                opertarion_type_for_usdt=CurrencyExchangeConditions.OperationType.BUY,
-                extra_data_listing={
-                    "payTimeLimit": best_match.get("payTimeLimit", ''),
-                    "minSingleTransAmount": best_match.get("minSingleTransAmount", ''),
-                    "maxSingleTransAmount": best_match.get("maxSingleTransAmount", ''),
-                    "tradeMethods": best_match.get("tradeMethods", ''),
+            if resp["success"]:
+                self.stdout.write(f"data for BUY USDT using {currency.name} retrived suceffully") 
 
-                },
-                extra_data_publisher={"positiveRate":best_match.get("positiveRate", '')}
-            )
+                data = p2p.extract_relevant_data(resp)
+                best_match = data[0] 
+                CurrencyExchangeConditions.objects.create(
+                    currency=currency,
+                    price=best_match.get("price", ''),
+                    publisher_name=best_match.get("nickName", ''),
+                    opertarion_type_for_usdt=CurrencyExchangeConditions.OperationType.BUY,
+                    extra_data_listing={
+                        "payTimeLimit": best_match.get("payTimeLimit", ''),
+                        "minSingleTransAmount": best_match.get("minSingleTransAmount", ''),
+                        "maxSingleTransAmount": best_match.get("maxSingleTransAmount", ''),
+                        "tradeMethods": best_match.get("tradeMethods", ''),
+
+                    },
+                    extra_data_publisher={"positiveRate":best_match.get("positiveRate", '')}
+                )
+            else:
+                self.stderr.write("solicitud no exitosa.") # NEW
+                self.stderr.write(resp) # NEW
+                
 
             # sell petition
             sell_filters = currency.operation_preferences.filter_for_sell_usdt
@@ -48,25 +55,31 @@ class Command(BaseCommand):
                 **sell_filters
             )
 
-            data = p2p.extract_relevant_data(resp)
-            best_match = data[0] 
-            CurrencyExchangeConditions.objects.create(
-                currency=currency,
-                price=best_match.get("price", ''),
-                publisher_name=best_match.get("nickName", ''),
-                opertarion_type_for_usdt=CurrencyExchangeConditions.OperationType.SELL,
-                extra_data_listing={
-                    "payTimeLimit": best_match.get("payTimeLimit", ''),
-                    "minSingleTransAmount": best_match.get("minSingleTransAmount", ''),
-                    "maxSingleTransAmount": best_match.get("maxSingleTransAmount", ''),
-                    "tradeMethods": best_match.get("tradeMethods", ''),
+            if resp["success"]:
+                self.stdout.write(f"data for SELL USDT to {currency.name} retrived suceffully") 
 
-                },
-                extra_data_publisher={"positiveRate":best_match.get("positiveRate", '')}
-            )
+                data = p2p.extract_relevant_data(resp)
+                best_match = data[0] 
+                CurrencyExchangeConditions.objects.create(
+                    currency=currency,
+                    price=best_match.get("price", ''),
+                    publisher_name=best_match.get("nickName", ''),
+                    opertarion_type_for_usdt=CurrencyExchangeConditions.OperationType.SELL,
+                    extra_data_listing={
+                        "payTimeLimit": best_match.get("payTimeLimit", ''),
+                        "minSingleTransAmount": best_match.get("minSingleTransAmount", ''),
+                        "maxSingleTransAmount": best_match.get("maxSingleTransAmount", ''),
+                        "tradeMethods": best_match.get("tradeMethods", ''),
+
+                    },
+                    extra_data_publisher={"positiveRate":best_match.get("positiveRate", '')}
+                )
+            else:
+                self.stderr.write("solicitud no exitosa.") # NEW
+                self.stderr.write(resp) # NEW
+            
 
 
-        self.stdout.write("succefull") 
         
 
 

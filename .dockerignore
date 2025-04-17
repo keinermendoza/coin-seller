@@ -1,0 +1,7 @@
+node_modules
+.git
+.venv
+*.sqlite3
+.env.dev
+.env.prod
+celerybeat-schedule
