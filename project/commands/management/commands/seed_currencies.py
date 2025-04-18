@@ -46,7 +46,7 @@ class Command(BaseCommand):
             filter_for_sell_usdt=real_filters,
         )
 
-        self.stderr.write("solicitud no exitosa.") # NEW
+        self.stdout.write("seeder ejecutado.") # NEW
     
 
 

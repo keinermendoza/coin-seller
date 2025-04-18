@@ -32,7 +32,7 @@ class Command(BaseCommand):
                     currency=currency,
                     price=best_match.get("price", ''),
                     publisher_name=best_match.get("nickName", ''),
-                    opertarion_type_for_usdt=CurrencyExchangeConditions.OperationType.BUY,
+                    operation_type=CurrencyExchangeConditions.OperationType.BUY,
                     extra_data_listing={
                         "payTimeLimit": best_match.get("payTimeLimit", ''),
                         "minSingleTransAmount": best_match.get("minSingleTransAmount", ''),
@@ -64,7 +64,7 @@ class Command(BaseCommand):
                     currency=currency,
                     price=best_match.get("price", ''),
                     publisher_name=best_match.get("nickName", ''),
-                    opertarion_type_for_usdt=CurrencyExchangeConditions.OperationType.SELL,
+                    operation_type=CurrencyExchangeConditions.OperationType.SELL,
                     extra_data_listing={
                         "payTimeLimit": best_match.get("payTimeLimit", ''),
                         "minSingleTransAmount": best_match.get("minSingleTransAmount", ''),

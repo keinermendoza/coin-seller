@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "p2p.apps.P2PConfig",
     'commands',
     'tasks',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -199,5 +200,5 @@ if USE_EMAIL:
 
     MANAGERS = ADMINS
 
-
+EMIAL_OWNER = os.environ.get('EMAIL_OWNER') 
 ADMIN_URL = os.environ.get('ADMIN_URL')

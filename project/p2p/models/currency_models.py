@@ -1,6 +1,5 @@
 from django.db import models
-
-# Create your models here.
+from .base_models import TimeStampedModel
 
 class TimeStampedModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -35,7 +34,7 @@ class CurrencyExchangeConditions(TimeStampedModel):
     currency = models.ForeignKey(Currency, related_name="exchange_conditions", on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=12, decimal_places=3)
     publisher_name = models.CharField(max_length=100)
-    opertarion_type_for_usdt = models.CharField(
+    operation_type = models.CharField(
         verbose_name="type",
         max_length=1,
         choices=OperationType.choices,
@@ -45,7 +44,7 @@ class CurrencyExchangeConditions(TimeStampedModel):
     extra_data_publisher = models.JSONField()
 
     def __str__(self):
-        return f"{self.get_opertarion_type_for_usdt_display()} {self.currency.code} @ {self.price} by {self.publisher_name}"
+        return f"{self.get_operation_type_display()} {self.currency.code} @ {self.price} by {self.publisher_name}"
     
     class Meta:
         ordering = ["-created"]

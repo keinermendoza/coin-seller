@@ -4,4 +4,6 @@ from django.conf import settings
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
+    path('', include("p2p.urls", namespace="p2p")),
+
 ]
