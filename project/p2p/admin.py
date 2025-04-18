@@ -1,3 +1,6 @@
+import csv
+from django.http import HttpResponse
+
 from django.contrib import (
     admin,
     messages
@@ -59,7 +62,7 @@ class FiatExchangePairAdmin(admin.ModelAdmin):
         "hora_mercado",
     ]
 
-    actions = ["actualizar_tipo_de_cambio"]
+    actions = ["actualizar_tipo_de_cambio", "exportar_a_csv"]
 
     def par(self, obj):
         return f"{obj.currency_from.code}/{obj.currency_to.code}"
@@ -102,6 +105,40 @@ class FiatExchangePairAdmin(admin.ModelAdmin):
             f"nuevos tipos de cambios actualizado con exitos",
             messages.SUCCESS
         )
+    
+    def exportar_a_csv(self, request, queryset):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="fiat_exchange_pairs.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow([
+            "Par",
+            "Dentro del min",
+            "Dentro del max",
+            "Publicado",
+            "Min",
+            "Valor Mercado",
+            "Max",
+            "Hora Publicado",
+            "Hora Mercado"
+        ])
+
+        for obj in queryset:
+            writer.writerow([
+                self.par(obj),
+                obj.rate_is_inside_min_border,
+                obj.rate_is_inside_max_border,
+                self.publicado(obj),
+                self.minimo(obj),
+                self.valor_mercado(obj),
+                self.maximo(obj),
+                self.hora_publicado(obj),
+                self.hora_mercado(obj),
+            ])
+
+        return response
+
+    exportar_a_csv.short_description = "Exportar selección a CSV"
 
 
 @admin.register(FiatExchangeDummyPairRate)
@@ -117,6 +154,7 @@ class FiatExchangeDummyPairRateAdmin(admin.ModelAdmin):
         "market_time",
     ]
     list_filter = ["fiat_exchange_pair"]
+    actions = ["exportar_a_csv"]
 
 
     def par(self, obj):
@@ -137,6 +175,28 @@ class FiatExchangeDummyPairRateAdmin(admin.ModelAdmin):
 
         if currency_from:
             return currency_from.created
+        
+    def exportar_a_csv(self, request, queryset):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="fiat_exchange_rates.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow([
+            "Par", "Fecha", "Rate", "Min", "Market Old", "Max", "Market Now", "Market Time"
+        ])
+        for obj in queryset:
+            writer.writerow([
+                obj.fiat_exchange_pair,
+                obj.created,
+                obj.rate,
+                obj.min,
+                self.market_old(obj),
+                obj.max,
+                self.market_now(obj),
+                self.market_time(obj),
+            ])
+        return response
+    exportar_a_csv.short_description = "Exportar selección a CSV"
 
     
 @admin.register(FiatExchangePairRate)

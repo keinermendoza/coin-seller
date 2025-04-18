@@ -33,15 +33,15 @@ class CurrencyExchangeConditions(TimeStampedModel):
 
     currency = models.ForeignKey(Currency, related_name="exchange_conditions", on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=12, decimal_places=3)
-    publisher_name = models.CharField(max_length=100)
+    publisher_name = models.CharField(max_length=100, blank=True)
     operation_type = models.CharField(
         verbose_name="type",
         max_length=1,
         choices=OperationType.choices,
         default=OperationType.BUY
     )
-    extra_data_listing = models.JSONField()
-    extra_data_publisher = models.JSONField()
+    extra_data_listing = models.JSONField(null=True, blank=True)
+    extra_data_publisher = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.get_operation_type_display()} {self.currency.code} @ {self.price} by {self.publisher_name}"

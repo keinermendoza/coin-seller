@@ -13,23 +13,38 @@ class Command(BaseCommand):
         pairs = FiatExchangePair.objects.all()
 
         for pair in pairs:
-            if pair.rate_is_inside_min_border() is False:
+            if not pair.last_rate:
+                continue  # evita error si no hay valor publicado
+
+            market_rate = pair.get_market_rate()
+            min_limit = pair.get_market_rate_plus_minimum_margin()
+            max_limit = pair.get_last_published_rate_plus_maximum_margin()
+            last_rate = pair.last_rate.rate
+
+            if pair.rate_is_inside_min_border() is not True:
                 send_mail(
-                    subject=f'par {pair} debajo del minimo!!',
-                    message=f'Alerta! el valor del par {pair} está fijado en {pair.last_rate.rate} y el valor de mercado está cayendo hasta {pair.get_market_rate()} traspasando el limite inferior de {pair.get_market_rate_plus_minimum_margin()}',
+                    subject=f'Par {pair} debajo del mínimo!!',
+                    message=(
+                        f'Alerta! El valor del par {pair} está fijado en {last_rate} '
+                        f'y el valor de mercado está cayendo hasta {market_rate}, '
+                        f'traspasando el límite inferior de {min_limit}.'
+                    ),
                     from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[settings.EMAIL_OWNER,],
+                    recipient_list=[settings.EMAIL_OWNER],
                     fail_silently=False,
                 )
 
-            if pair.rate_is_inside_max_border() is False:
+            if pair.rate_is_inside_max_border() is not True:
                 send_mail(
-                    subject=f'par {pair} encima del maximo!!',
-                    message=f'Alerta! el valor del par {pair} está fijado en {pair.last_rate.rate} el valor de mercado ha subido hasta {pair.get_market_rate()} y excedido el valor maximo de {pair.get_last_published_rate_plus_maximum_margin()} ',
+                    subject=f'Par {pair} encima del máximo!!',
+                    message=(
+                        f'Alerta! El valor del par {pair} está fijado en {last_rate}, '
+                        f'el valor de mercado ha subido hasta {market_rate} y ha excedido '
+                        f'el límite superior de {max_limit}.'
+                    ),
                     from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[settings.EMAIL_OWNER,],
+                    recipient_list=[settings.EMAIL_OWNER],
                     fail_silently=False,
                 )
 
-
-        self.stdout.write("checkeo de rates concluido") # NEW
+        self.stdout.write("✅ Checkeo de rates concluido.")
