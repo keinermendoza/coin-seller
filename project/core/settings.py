@@ -200,5 +200,5 @@ if USE_EMAIL:
 
     MANAGERS = ADMINS
 
-EMIAL_OWNER = os.environ.get('EMAIL_OWNER') 
+EMAIL_OWNER = os.environ.get('EMAIL_OWNER') 
 ADMIN_URL = os.environ.get('ADMIN_URL')

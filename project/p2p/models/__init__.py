@@ -6,5 +6,5 @@ from .currency_models import (
 from .exchange_models import (
     FiatExchangePair,
     FiatExchangePairRate,
-    FiatExchangeDummyPairRate
+    FiatExchangeDummyPairRate,
 )

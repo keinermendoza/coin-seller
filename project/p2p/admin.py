@@ -9,6 +9,7 @@ from .models import (
     CurrencyExchangeConditions,
     CurrencyOperationPreferences,
     FiatExchangePair,
+    FiatExchangePairRate,
     FiatExchangeDummyPairRate
 )
 
@@ -126,9 +127,33 @@ class FiatExchangeDummyPairRateAdmin(admin.ModelAdmin):
             return rate.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
     
     def market_old(self, obj):
-        return obj.market_rate.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+        if obj.market_rate:
+            return obj.market_rate.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
     
     def market_time(self, obj):
-        return obj.fiat_exchange_pair.last_rate.created
+        if obj.fiat_exchange_pair.last_rate:
+            return obj.fiat_exchange_pair.last_rate.created
 
     
+@admin.register(FiatExchangePairRate)
+class FiatExchangePairRateAdmin(admin.ModelAdmin):
+    list_display = [
+        "par",
+        "created",
+        "rate",
+        "market_now",
+        "market_time",
+    ]
+    list_filter = ["fiat_exchange_pair"]
+
+
+    def par(self, obj):
+        return obj.fiat_exchange_pair
+    
+    def market_now(self, obj):
+        if rate := obj.fiat_exchange_pair.get_market_rate():
+            return rate.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+  
+    def market_time(self, obj):
+        if obj.fiat_exchange_pair.last_rate:
+            return obj.fiat_exchange_pair.last_rate.created
