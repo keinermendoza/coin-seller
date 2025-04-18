@@ -131,8 +131,12 @@ class FiatExchangeDummyPairRateAdmin(admin.ModelAdmin):
             return obj.market_rate.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
     
     def market_time(self, obj):
-        if obj.fiat_exchange_pair.last_rate:
-            return obj.fiat_exchange_pair.last_rate.created
+        currency_from = obj.fiat_exchange_pair.currency_from.exchange_conditions.filter(
+            operation_type='B',
+        ).order_by('-created').first()
+
+        if currency_from:
+            return currency_from.created
 
     
 @admin.register(FiatExchangePairRate)
@@ -155,5 +159,9 @@ class FiatExchangePairRateAdmin(admin.ModelAdmin):
             return rate.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
   
     def market_time(self, obj):
-        if obj.fiat_exchange_pair.last_rate:
-            return obj.fiat_exchange_pair.last_rate.created
+        currency_from = obj.fiat_exchange_pair.currency_from.exchange_conditions.filter(
+            operation_type='B',
+        ).order_by('-created').first()
+
+        if currency_from:
+            return currency_from.created
