@@ -202,3 +202,4 @@ if USE_EMAIL:
 
 EMAIL_OWNER = os.environ.get('EMAIL_OWNER') 
 ADMIN_URL = os.environ.get('ADMIN_URL')
+ENVIORMENT = os.environ.get('ENVIORMENT')

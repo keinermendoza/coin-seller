@@ -1,3 +1,4 @@
+from decimal import Decimal, ROUND_UP
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
@@ -25,9 +26,11 @@ class Command(BaseCommand):
                 send_mail(
                     subject=f'Par {pair} debajo del mínimo!!',
                     message=(
-                        f'Alerta! El valor del par {pair} está fijado en {last_rate} '
-                        f'y el valor de mercado está cayendo hasta {market_rate}, '
-                        f'traspasando el límite inferior de {min_limit}.'
+                        f'Alerta! El tipo de cambio {pair} fué fijado en {pair.currency_to.symbol} {last_rate} a las {pair.created.strftime("%H:%M %d/%m/%Y")}\n'
+                        f'el valor de mercado está cayendo hasta {pair.currency_to.symbol} {market_rate}, '
+                        f'y ya ha traspasado el límite inferior de {pair.currency_to.symbol} {min_limit}.\n'
+                        f'visite https://coin.keinermendoza.com/{settings.ADMIN_URL} para actualizar el tipo de cambio.\n'
+                        f'enviado desde entorno: {settings.ENVIORMENT}'
                     ),
                     from_email=settings.EMAIL_HOST_USER,
                     recipient_list=[settings.EMAIL_OWNER],
@@ -38,9 +41,12 @@ class Command(BaseCommand):
                 send_mail(
                     subject=f'Par {pair} encima del máximo!!',
                     message=(
-                        f'Alerta! El valor del par {pair} está fijado en {last_rate}, '
-                        f'el valor de mercado ha subido hasta {market_rate} y ha excedido '
-                        f'el límite superior de {max_limit}.'
+                        f'Alerta! El tipo de cambio {pair} está fijado en {pair.currency_to.symbol} {last_rate} a las {pair.created.strftime("%H:%M %d/%m/%Y")}\n'
+                        f'el valor de mercado ha subido hasta {pair.currency_to.symbol} {market_rate} y ha excedido '
+                        f'el límite superior de {pair.currency_to.symbol} {max_limit}.\n'
+                        f'visite https://coin.keinermendoza.com/{settings.ADMIN_URL} para actualizar el tipo de cambio\n'
+                        f'enviado desde entorno: {settings.ENVIORMENT}'
+
                     ),
                     from_email=settings.EMAIL_HOST_USER,
                     recipient_list=[settings.EMAIL_OWNER],

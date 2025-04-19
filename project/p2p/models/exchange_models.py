@@ -1,5 +1,5 @@
 from django.contrib import admin
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from django.db import models
 from .base_models import TimeStampedModel
 from .currency_models import (
@@ -45,7 +45,7 @@ class FiatExchangePair(TimeStampedModel):
 
         if from_currency and to_currency:
             rate =  to_currency.price / from_currency.price 
-            return rate
+            return Decimal(rate).quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
     
     def get_market_rate_plus_optimum_margin(self) -> Decimal | None:
         if market_rate:= self.get_market_rate():
@@ -53,11 +53,12 @@ class FiatExchangePair(TimeStampedModel):
     
     def get_last_published_rate_plus_maximum_margin(self) -> Decimal | None:
         if self.last_rate:
-            return self.last_rate.rate * (1 + self.maximum_margin) 
+            return Decimal(self.last_rate.rate * (1 + self.maximum_margin)).quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+         
 
     def get_market_rate_plus_minimum_margin(self) -> Decimal | None:
         if market_rate:= self.get_market_rate():
-            return market_rate * (1 - self.minimum_margin) 
+            return Decimal(market_rate * (1 - self.minimum_margin)).quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP) 
     
     @admin.display(boolean=True, description='¿min ok?')
     def rate_is_inside_min_border(self) -> bool | None:

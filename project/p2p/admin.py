@@ -16,7 +16,6 @@ from .models import (
     FiatExchangeDummyPairRate
 )
 
-
 @admin.register(Currency)
 class CurrencyAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "created", "edited")
@@ -67,18 +66,14 @@ class FiatExchangePairAdmin(admin.ModelAdmin):
     def par(self, obj):
         return f"{obj.currency_from.code}/{obj.currency_to.code}"
     
-    
     def valor_mercado(self, obj):
-        if rate := obj.get_market_rate():
-            return rate.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+        return obj.get_market_rate()
         
     def minimo(self, obj):
-        if min := obj.get_market_rate_plus_minimum_margin():
-            return min.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+        return obj.get_market_rate_plus_minimum_margin()
         
     def maximo(self, obj):
-        if max := obj.get_last_published_rate_plus_maximum_margin():
-            return max.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+        return obj.get_last_published_rate_plus_maximum_margin()
         
     def hora_mercado(self, obj):
         currency_from = obj.currency_from.exchange_conditions.filter(
@@ -161,12 +156,10 @@ class FiatExchangeDummyPairRateAdmin(admin.ModelAdmin):
         return obj.fiat_exchange_pair
     
     def market_now(self, obj):
-        if rate := obj.fiat_exchange_pair.get_market_rate():
-            return rate.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+        return obj.fiat_exchange_pair.get_market_rate()
     
     def market_old(self, obj):
-        if obj.market_rate:
-            return obj.market_rate.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+        return obj.market_rate
     
     def market_time(self, obj):
         currency_from = obj.fiat_exchange_pair.currency_from.exchange_conditions.filter(
@@ -215,8 +208,7 @@ class FiatExchangePairRateAdmin(admin.ModelAdmin):
         return obj.fiat_exchange_pair
     
     def market_now(self, obj):
-        if rate := obj.fiat_exchange_pair.get_market_rate():
-            return rate.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+        return obj.fiat_exchange_pair.get_market_rate()
   
     def market_time(self, obj):
         currency_from = obj.fiat_exchange_pair.currency_from.exchange_conditions.filter(
