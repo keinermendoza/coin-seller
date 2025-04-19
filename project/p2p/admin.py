@@ -54,9 +54,9 @@ class FiatExchangePairAdmin(admin.ModelAdmin):
         "rate_is_inside_min_border",
         "rate_is_inside_max_border",
         "publicado",
-        "minimo",
+        "lim_max_publicado",
         "valor_mercado",
-        "maximo",
+        "lim_max_mercado",
         "hora_publicado",
         "hora_mercado",
     ]
@@ -69,10 +69,10 @@ class FiatExchangePairAdmin(admin.ModelAdmin):
     def valor_mercado(self, obj):
         return obj.get_market_rate()
         
-    def minimo(self, obj):
+    def lim_max_publicado(self, obj):
         return obj.get_market_rate_plus_minimum_margin()
         
-    def maximo(self, obj):
+    def lim_max_mercado(self, obj):
         return obj.get_last_published_rate_plus_maximum_margin()
         
     def hora_mercado(self, obj):

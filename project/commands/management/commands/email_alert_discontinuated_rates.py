@@ -26,10 +26,10 @@ class Command(BaseCommand):
                 send_mail(
                     subject=f'Par {pair} debajo del mínimo!!',
                     message=(
-                        f'Alerta! El tipo de cambio {pair} fué fijado en {pair.currency_to.symbol} {last_rate} a las {pair.created.strftime("%H:%M %d/%m/%Y")}\n'
+                        f'Alerta! El tipo de cambio {pair} fué fijado en {pair.currency_to.symbol} {last_rate} desde {pair.created.strftime("%H:%M %d/%m/%Y")}\n'
                         f'el valor de mercado está cayendo hasta {pair.currency_to.symbol} {market_rate}, '
-                        f'y ya ha traspasado el límite inferior de {pair.currency_to.symbol} {min_limit}.\n'
-                        f'visite https://coin.keinermendoza.com/{settings.ADMIN_URL} para actualizar el tipo de cambio.\n'
+                        f'y el tipo de cambio {pair.currency_to.symbol} {last_rate} ya es mayor que límite de seguridad de {pair.currency_to.symbol} {min_limit}.\n'
+                        f'Para evitar perdidas visite https://coin.keinermendoza.com/{settings.ADMIN_URL} para actualizar el tipo de cambio.\n'
                         f'enviado desde entorno: {settings.ENVIORMENT}'
                     ),
                     from_email=settings.EMAIL_HOST_USER,
@@ -41,10 +41,10 @@ class Command(BaseCommand):
                 send_mail(
                     subject=f'Par {pair} encima del máximo!!',
                     message=(
-                        f'Alerta! El tipo de cambio {pair} está fijado en {pair.currency_to.symbol} {last_rate} a las {pair.created.strftime("%H:%M %d/%m/%Y")}\n'
+                        f'Alerta! El tipo de cambio {pair} está fijado en {pair.currency_to.symbol} {last_rate} desde {pair.created.strftime("%H:%M %d/%m/%Y")}\n'
                         f'el valor de mercado ha subido hasta {pair.currency_to.symbol} {market_rate} y ha excedido '
                         f'el límite superior de {pair.currency_to.symbol} {max_limit}.\n'
-                        f'visite https://coin.keinermendoza.com/{settings.ADMIN_URL} para actualizar el tipo de cambio\n'
+                        f'Para evitar perder posibles clientes visite https://coin.keinermendoza.com/{settings.ADMIN_URL} para actualizar el tipo de cambio\n'
                         f'enviado desde entorno: {settings.ENVIORMENT}'
 
                     ),
