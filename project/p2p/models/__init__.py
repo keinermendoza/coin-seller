@@ -8,3 +8,5 @@ from .exchange_models import (
     FiatExchangePairRate,
     FiatExchangeDummyPairRate,
 )
+
+from .switch import SwitchModel
