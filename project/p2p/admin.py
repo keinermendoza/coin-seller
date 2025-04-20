@@ -13,8 +13,13 @@ from .models import (
     CurrencyOperationPreferences,
     FiatExchangePair,
     FiatExchangePairRate,
-    FiatExchangeDummyPairRate
+    FiatExchangeDummyPairRate,
+    SwitchModel
 )
+
+@admin.register(SwitchModel)
+class SwitchModelAdmin(admin.ModelAdmin):
+    pass
 
 @admin.register(Currency)
 class CurrencyAdmin(admin.ModelAdmin):
