@@ -9,3 +9,5 @@ staticfiles
 celerybeat-schedule
 logs
 node_modules
+assets
+logs/
