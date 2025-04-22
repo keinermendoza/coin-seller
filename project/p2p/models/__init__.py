@@ -10,3 +10,4 @@ from .exchange_models import (
 )
 
 from .switch import SwitchModel
+from .coordinates import ImageCoordinates

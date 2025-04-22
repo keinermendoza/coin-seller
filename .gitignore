@@ -8,3 +8,4 @@ staticfiles
 .env.prod
 celerybeat-schedule
 logs
+node_modules

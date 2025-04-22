@@ -1,7 +1,10 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
-
+from . import api
 app_name = "p2p"
 urlpatterns = [
-    path('calculate', views.CalculateView.as_view(), name="calculate"),
+    path("api/sell", api.SellDataView.as_view(), name="sell_data"),
+    path("api/buy", api.BuyDataView.as_view(), name="buy_data"),
+    path("api/images", api.ImageCoordinatesView.as_view(), name="images"),
+    re_path(r'^client.*$', views.ClientView.as_view(), name="react_client"),
 ]

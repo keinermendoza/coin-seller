@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     "p2p.apps.P2PConfig",
     'commands',
     'tasks',
-    'django_extensions'
+    'django_extensions',
+    'rest_framework',
+    "django_vite",
 ]
 
 MIDDLEWARE = [
@@ -119,8 +121,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-STATIC_URL = "/staticfiles/"
+STATIC_URL = "static/"
+STATICFILE_DIRS = [
+  BASE_DIR / "assets"
+]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
@@ -203,3 +207,15 @@ if USE_EMAIL:
 EMAIL_OWNER = os.environ.get('EMAIL_OWNER') 
 ADMIN_URL = os.environ.get('ADMIN_URL')
 ENVIORMENT = os.environ.get('ENVIORMENT')
+
+DJANGO_VITE = {
+  "default": {
+    "dev_mode": DEBUG
+  }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAdminUser',
+    ]
+}

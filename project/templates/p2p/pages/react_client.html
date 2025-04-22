@@ -1,0 +1,18 @@
+{% load django_vite %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Template</title>
+    {% vite_hmr_client %}
+</head>
+<body>
+    <div id="root"></div>
+
+    {% vite_react_refresh %}
+    {% vite_asset 'src/main.jsx' %}
+</body>
+</html>
+
+

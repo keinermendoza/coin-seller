@@ -1,12 +1,15 @@
+from typing import List
 from django.contrib import admin
 from decimal import Decimal, ROUND_HALF_UP
 from django.db import models
 from .base_models import TimeStampedModel
 from .currency_models import (
-    Currency
+    Currency,
+    CurrencyExchangeConditions
 )
 
 class FiatExchangePair(TimeStampedModel):
+    slug = models.SlugField(null=True, blank=True)
     currency_from = models.ForeignKey(
         Currency,
         related_name="exchanges_as_origin",
@@ -33,8 +36,9 @@ class FiatExchangePair(TimeStampedModel):
     @property
     def optimum_margin(self):
         return self.optimum_margin_expected / 100
+    
+    def get_last_currency_exchange_conditions_pair_buy_sell(self) -> List['CurrencyExchangeConditions']:
 
-    def get_market_rate(self):
         from_currency = self.currency_from.exchange_conditions.filter(
             operation_type='B',
         ).order_by('-created').first()
@@ -42,6 +46,11 @@ class FiatExchangePair(TimeStampedModel):
         to_currency = self.currency_to.exchange_conditions.filter(
             operation_type='S',
         ).order_by('-created').first()
+
+        return [from_currency, to_currency]
+
+    def get_market_rate(self):
+        from_currency, to_currency = self.get_last_currency_exchange_conditions_pair_buy_sell()
 
         if from_currency and to_currency:
             rate =  to_currency.price / from_currency.price 
@@ -81,10 +90,14 @@ class FiatExchangePair(TimeStampedModel):
 
         if rate is None:
             raise ValueError("No se pudo calcular un rate de mercado válido.")
+        
+        from_currency, to_currency = self.get_last_currency_exchange_conditions_pair_buy_sell()
 
         return FiatExchangePairRate.objects.create(
             fiat_exchange_pair=self,
-            rate=rate
+            rate=rate,
+            market_buy_conditions=from_currency,
+            market_sell_conditions=to_currency
         )
 
     def store_dummy_rate(self, rate: Decimal | None = None) -> 'FiatExchangeDummyPairRate':
@@ -98,12 +111,16 @@ class FiatExchangePair(TimeStampedModel):
             raise ValueError("No se pudo calcular un rate de mercado válido.")
 # 
         market_rate = self.get_market_rate()
+        from_currency, to_currency = self.get_last_currency_exchange_conditions_pair_buy_sell()
+
         return FiatExchangeDummyPairRate.objects.create(
             fiat_exchange_pair=self,
             rate=rate,
             market_rate=market_rate,
             max=market_rate * (1 + self.maximum_margin),
-            min=market_rate * (1 - self.minimum_margin)
+            min=market_rate * (1 - self.minimum_margin),
+            market_buy_conditions=from_currency,
+            market_sell_conditions=to_currency
         )
     
     @property
@@ -111,8 +128,11 @@ class FiatExchangePair(TimeStampedModel):
         return FiatExchangePairRate.objects.filter(
             fiat_exchange_pair=self
         ).first()
-  
     
+    def save(self, *args, **kwargs):
+        self.slug = f"{self.currency_from.code.lower()}_{self.currency_to.code.lower()}"
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.currency_from.code}/{self.currency_to.code}"
     
@@ -130,7 +150,48 @@ class FiatExchangePairRate(TimeStampedModel):
         related_name="rates",
         on_delete=models.CASCADE
     ) 
+    market_buy_conditions = models.ForeignKey(
+        CurrencyExchangeConditions,
+        related_name="pair_rates_buy",
+        on_delete=models.SET_NULL,
+        null=True
+    ) 
+    market_sell_conditions = models.ForeignKey(
+        CurrencyExchangeConditions,
+        related_name="pair_rates_sell",
+        on_delete=models.SET_NULL,
+        null=True
+    ) 
+
+
     rate = models.DecimalField(max_digits=10, decimal_places=3)
+    def sell_price_limit(self):
+        """
+        Provides a simplified view of the profitability limit on the sell side of the pair.
+        Assumes the buy price remains constant.
+        This method does not take the current market price into account.
+
+        For a complete profitability check before executing an operation, see:
+        - FiatExchangePair.rate_is_inside_min_border
+        - FiatExchangePair.rate_is_inside_max_border
+        """
+        if self.market_buy_conditions:
+            return Decimal(self.market_buy_conditions.price * self.rate).quantize(Decimal('0.001'), rounding=ROUND_HALF_UP) 
+    sell_price_limit.short_description = "Vender sobre"
+
+    def buy_price_limit(self):
+        """
+        Provides a simplified view of the profitability limit on the buy side of the pair.
+        Assumes the sell price remains constant.
+        This method does not take the current market price into account.
+
+        For a complete profitability check before executing an operation, see:
+        - FiatExchangePair.rate_is_inside_min_border
+        - FiatExchangePair.rate_is_inside_max_border
+        """
+        if self.market_sell_conditions:
+            return Decimal(self.market_sell_conditions.price / self.rate).quantize(Decimal('0.001'), rounding=ROUND_HALF_UP) 
+    buy_price_limit.short_description = "Comprar bajo"
 
     class Meta:
         ordering = ["-created"]
@@ -146,6 +207,19 @@ class FiatExchangeDummyPairRate(TimeStampedModel):
     market_rate = models.DecimalField(max_digits=10, decimal_places=3)
     max = models.DecimalField(max_digits=10, decimal_places=3)
     min = models.DecimalField(max_digits=10, decimal_places=3)
+
+    market_buy_conditions = models.ForeignKey(
+        CurrencyExchangeConditions,
+        related_name="dummy_pair_rates_buy",
+        on_delete=models.SET_NULL,
+        null=True
+    ) 
+    market_sell_conditions = models.ForeignKey(
+        CurrencyExchangeConditions,
+        related_name="dummy_pair_rates_sell",
+        on_delete=models.SET_NULL,
+        null=True
+    ) 
 
     class Meta:
         ordering = ["-created"]
