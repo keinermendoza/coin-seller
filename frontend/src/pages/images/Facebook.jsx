@@ -2,7 +2,7 @@ import SocialCanvas from "@/components/SocialCanvas";
 
 export default function Facebook() {
   const data = {
-    data: [
+    points: [
       {
         slug: "brl_ves",
         text: "15.45",

@@ -25,7 +25,7 @@ const amount = {
 
 
 export default function Buy() {
-  const {data} = useFetch('http://127.0.0.1:8000/api/buy')
+  const {data} = useFetch('/api/buy')
   
   function onSubmit(data) {
     toast(
