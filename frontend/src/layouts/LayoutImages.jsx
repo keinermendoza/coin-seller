@@ -5,7 +5,7 @@ export default function LayoutImages() {
     <>
       <h1 className="text-3xl font-medium mb-4">Imagenes</h1>
 
-      <Tabs defaultValue="histories" className="w-[400px]">
+      <Tabs defaultValue="histories" className="">
           <TabsList>
               <TabsTrigger value="histories">Instagram / Whatsapp</TabsTrigger>
               <TabsTrigger value="facebook-post">Facebook</TabsTrigger>

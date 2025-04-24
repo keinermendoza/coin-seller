@@ -3,13 +3,12 @@ import { FormRegisterOperation } from "@/components/FormRegisterOperation"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { AlertCircle } from "lucide-react"
-import useFetch from "@/hooks/useFetch"
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from "@/components/ui/alert"
-
+import { useChanges } from "@/contexts/ChangeContext"
 
 const price = {
   label: "Precio de comprar 1 USDT",
@@ -25,7 +24,7 @@ const amount = {
 
 
 export default function Buy() {
-  const {data} = useFetch('/api/buy')
+  const {changes:data} = useChanges()
   
   function onSubmit(data) {
     toast(
@@ -44,16 +43,16 @@ export default function Buy() {
         <p className="text-xl font-medium">Calculadora de Cambios</p>
         <p className=" text-3xl font-bold">Bs <span className="font-medium text-xl">a</span> R$</p>
       </div>
-      {data && <Calculator data={data} />}
+      {data?.buy && <Calculator data={data.buy} />}
 
       <Separator className="my-4" />
       
-      {data?.buy_price_limit &&
+      {data?.buy.buy_price_limit &&
         <Alert className="bg-red-100" variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Importante!!</AlertTitle>
         <AlertDescription>
-          Comprar USDT por más de {data.buy_price_limit} produce perdidas 
+          Comprar USDT por más de {data.buy.buy_price_limit} produce perdidas 
         </AlertDescription>
       </Alert>}
 

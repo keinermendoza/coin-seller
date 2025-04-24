@@ -10,8 +10,7 @@ import {
   AlertTitle,
 } from "@/components/ui/alert"
 
-import useFetch from "@/hooks/useFetch"
-
+import { useChanges } from "@/contexts/ChangeContext"
 // const data = {
 //   currencyTo: {
 //       image: "",
@@ -43,8 +42,7 @@ const amount = {
 }
 
 export default function Sell() {
-    const {data} = useFetch('/api/sell')
-  
+  const {changes:data} = useChanges()
 
   function onSubmit(data) {
     toast(
@@ -63,16 +61,16 @@ export default function Sell() {
         <p className="text-xl font-medium">Calculadora de Cambios</p>
         <p className=" text-3xl font-bold">R$ <span className="font-medium text-xl">a</span> Bs</p>
       </div>
-      {data && <Calculator data={data} />}
+      {data?.sell && <Calculator data={data.sell} />}
 
       <Separator className="my-4" />
 
-      {data?.sell_price_limit &&
+      {data?.sell.sell_price_limit &&
         <Alert className="bg-red-100" variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Importante!!</AlertTitle>
         <AlertDescription>
-          Vender USDT por menos de {data.sell_price_limit} produce perdidas 
+          Vender USDT por menos de {data.sell.sell_price_limit} produce perdidas 
         </AlertDescription>
       </Alert>}
       

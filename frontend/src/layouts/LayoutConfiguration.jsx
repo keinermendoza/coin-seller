@@ -5,7 +5,7 @@ export default function LayoutConfiguration() {
   return (
     <>
     <h1 className="text-3xl font-medium mb-4">Configuraciones</h1>
-    <Tabs defaultValue="update-changes" className="w-[400px]">
+    <Tabs defaultValue="update-changes" className="">
         <TabsList>
             <TabsTrigger value="update-changes">Actualizar Cambios</TabsTrigger>
             <TabsTrigger value="profile">Perfil</TabsTrigger>

@@ -1,3 +1,4 @@
+from django.utils import timezone as tz
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -37,7 +38,54 @@ class BuyDataSerializer(serializers.ModelSerializer):
     def get_buy_price_limit(self, obj):
         return obj.buy_price_limit()
 
+class VESRatesApiView(APIView):
+    def get(self, request, *args, **kwargs):
+        # buy ves/usdt section
+        ves_brl = FiatExchangePair.objects.get(
+            currency_from__name="Bolivar",
+            currency_to__name="Real"
+        )
+        rate_ves_brl = ves_brl.last_rate
+
+        currencyFrom = CurrencySerializer(ves_brl.currency_from)
+        currencyTo = CurrencySerializer(ves_brl.currency_to)
+        ves_brl_rate_info = BuyDataSerializer(rate_ves_brl)
+
+        buy = {
+            "currencyFrom":currencyFrom.data,
+            "currencyTo": currencyTo.data,
+            **ves_brl_rate_info.data
+        }
+
+        # sell ves/usdt section
+
+        brl_ves = FiatExchangePair.objects.get(
+            currency_from__name="Real",
+            currency_to__name="Bolivar"
+        )
+        rate_brl_ves = brl_ves.last_rate
+        currencyFrom = CurrencySerializer(brl_ves.currency_from)
+        currencyTo = CurrencySerializer(brl_ves.currency_to)
+        brl_ves_rate_info = SellDataSerializer(rate_brl_ves)
+
+        sell = {
+            "currencyFrom":currencyFrom.data,
+            "currencyTo": currencyTo.data,
+            **brl_ves_rate_info.data
+        }
+
+        return Response({
+            "now": tz.now(),
+            "buy": buy,
+            "sell": sell
+        }, status=status.HTTP_200_OK)
     
+class RatesAutoUpdateAction(APIView):
+    def post(self, request, *args, **kwargs):
+        fiat_pairs = FiatExchangePair.objects.all()
+        for fiat_pair in fiat_pairs:
+            fiat_pair.create_rate()
+        return Response(status=status.HTTP_201_CREATED)
 
 class BuyDataView(APIView):
     def get(self, request, *args, **kwargs):

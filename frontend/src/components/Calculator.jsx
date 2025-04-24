@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Input } from "./ui/input"
+import timeFormat from "@/lib/timeFormat"
 function Label({children, ...props}) {
     return (
         <label className="block mb-2 text-sm italic text-gray-900 dark:text-white" {...props}> 
@@ -90,7 +91,7 @@ export default function Calculator({data}) {
                     <span className="target_symbol">{data.currencyTo.symbol}</span>
                     <span id="target_amount">{parseFloat(data.rate)}</span>
                 </p>
-                <p className="text-[0.675rem] italic">Valor Actualizado el <span id="updated_at">{data.created}</span></p>
+                <p className="text-[0.675rem] italic">Valor Actualizado el <span id="updated_at">{timeFormat(data.created)}</span></p>
             </div>
 
         </div>
