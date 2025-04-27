@@ -31,8 +31,8 @@ function ImageCircle({src, alt, ...props}) {
 export default function Calculator({data}) {
 
     const [currencyFromInputValue, setCurrencyFromInputValue] = useState(1);
-    const [currencyToInputValue, setCurrencyToInputValue] = useState(data.rate);
-    const [rate, setRate] = useState(data.rate);
+    const [currencyToInputValue, setCurrencyToInputValue] = useState(data.rateInfo.rate);
+    const [rate, setRate] = useState(data.rateInfo.rate);
 
     const handleCurrencyFromChange = (e) => {
         const value = parseFloat(e.target.value);
@@ -89,7 +89,7 @@ export default function Calculator({data}) {
                     <span id="base_amount">1</span>
                     <span> = </span>
                     <span className="target_symbol">{data.currencyTo.symbol}</span>
-                    <span id="target_amount">{parseFloat(data.rate)}</span>
+                    <span id="target_amount">{parseFloat(rate)}</span>
                 </p>
                 <p className="text-[0.675rem] italic">Valor Actualizado el <span id="updated_at">{timeFormat(data.created)}</span></p>
             </div>

@@ -1,5 +1,5 @@
 export default function ChangeRate() {
   return (
-    <div>ChangeRate</div>
+    <div>Suscribirse</div>
   )
 }
