@@ -1,7 +1,7 @@
 from django.utils import timezone as tz
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from rest_framework import permissions
 from rest_framework import serializers, status
 from p2p.models import (
     Currency,
@@ -10,76 +10,104 @@ from p2p.models import (
     ImageCoordinates,
 )
 
+
 class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
         exclude = ["created", "edited"]
         model = Currency
 
 
-
-class SellDataSerializer(serializers.ModelSerializer):
+class FiatExchangeRateSellSerializer(serializers.ModelSerializer):
     sell_price_limit = serializers.SerializerMethodField()
-    
+
     class Meta:
         fields = ["created", "rate", "sell_price_limit"]
         model = FiatExchangePairRate
-    
+
     def get_sell_price_limit(self, obj):
         return obj.sell_price_limit()
-    
 
-class BuyDataSerializer(serializers.ModelSerializer):
+class FiatExchangeRateBuySerializer(serializers.ModelSerializer):
     buy_price_limit = serializers.SerializerMethodField()
-    
+
     class Meta:
         fields = ["created", "rate", "buy_price_limit"]
         model = FiatExchangePairRate
-    
+
     def get_buy_price_limit(self, obj):
         return obj.buy_price_limit()
 
-class VESRatesApiView(APIView):
-    def get(self, request, *args, **kwargs):
-        # buy ves/usdt section
-        ves_brl = FiatExchangePair.objects.get(
-            currency_from__name="Bolivar",
-            currency_to__name="Real"
-        )
-        rate_ves_brl = ves_brl.last_rate
+class CalculatorRateSerializer(serializers.Serializer):
+    currencyFrom = CurrencySerializer(source="currency_from")
+    currencyTo = CurrencySerializer(source="currency_to")
 
-        currencyFrom = CurrencySerializer(ves_brl.currency_from)
-        currencyTo = CurrencySerializer(ves_brl.currency_to)
-        ves_brl_rate_info = BuyDataSerializer(rate_ves_brl)
+class CalculatorBuyRateSerializer(CalculatorRateSerializer):
+    rateInfo = serializers.SerializerMethodField()
 
-        buy = {
-            "currencyFrom":currencyFrom.data,
-            "currencyTo": currencyTo.data,
-            **ves_brl_rate_info.data
-        }
-
-        # sell ves/usdt section
-
-        brl_ves = FiatExchangePair.objects.get(
-            currency_from__name="Real",
-            currency_to__name="Bolivar"
-        )
-        rate_brl_ves = brl_ves.last_rate
-        currencyFrom = CurrencySerializer(brl_ves.currency_from)
-        currencyTo = CurrencySerializer(brl_ves.currency_to)
-        brl_ves_rate_info = SellDataSerializer(rate_brl_ves)
-
-        sell = {
-            "currencyFrom":currencyFrom.data,
-            "currencyTo": currencyTo.data,
-            **brl_ves_rate_info.data
-        }
-
-        return Response({
-            "now": tz.now(),
-            "buy": buy,
-            "sell": sell
-        }, status=status.HTTP_200_OK)
+    def get_rateInfo(self, obj):
+        last_rate = obj.last_rate
+        return FiatExchangeRateBuySerializer(last_rate).data
     
+class CalculatorSellRateSerializer(CalculatorRateSerializer):
+    rateInfo = serializers.SerializerMethodField()
+
+    def get_rateInfo(self, obj):
+        last_rate = obj.last_rate
+        return FiatExchangeRateSellSerializer(last_rate).data
+
+class CalculatorRatesApiView(APIView):
+    """
+    uses current user fiat preferences for return data to live buy/sell calculator feature  
+    """
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        user_fiat_pairs_in_sell = FiatExchangePair.objects.user_suscribed_sell_side(user)
+        user_fiat_pairs_in_buy = FiatExchangePair.objects.user_suscribed_buy_side(user)
+        
+        serilaizer_sell = CalculatorSellRateSerializer(user_fiat_pairs_in_sell, many=True)
+        serilaizer_buy = CalculatorBuyRateSerializer(user_fiat_pairs_in_buy, many=True)
+
+        return Response(
+            {"now": tz.now(), "buy": serilaizer_buy.data, "sell": serilaizer_sell.data}, status=status.HTTP_200_OK
+        )
+    
+        # ves_brl = FiatExchangePair.objects.get(
+        #     currency_from__name="Bolivar", currency_to__name="Real"
+        # )
+        # rate_ves_brl = ves_brl.last_rate
+
+        # currencyFrom = CurrencySerializer(ves_brl.currency_from)
+        # currencyTo = CurrencySerializer(ves_brl.currency_to)
+        # ves_brl_rate_info = FiatExchangeRateBuySerializer(rate_ves_brl)
+
+        # buy = {
+        #     "currencyFrom": currencyFrom.data,
+        #     "currencyTo": currencyTo.data,
+        #     **ves_brl_rate_info.data,
+        # }
+
+        # # sell ves/usdt section
+
+        # brl_ves = FiatExchangePair.objects.get(
+        #     currency_from__name="Real", currency_to__name="Bolivar"
+        # )
+        # rate_brl_ves = brl_ves.last_rate
+        # currencyFrom = CurrencySerializer(brl_ves.currency_from)
+        # currencyTo = CurrencySerializer(brl_ves.currency_to)
+        # brl_ves_rate_info = FiatExchangeRateSellSerializer(rate_brl_ves)
+
+        # sell = {
+        #     "currencyFrom": currencyFrom.data,
+        #     "currencyTo": currencyTo.data,
+        #     **brl_ves_rate_info.data,
+        # }
+
+        # return Response(
+        #     {"now": tz.now(), "buy": buy, "sell": sell}, status=status.HTTP_200_OK
+        # )
+
+
 class RatesAutoUpdateAction(APIView):
     def post(self, request, *args, **kwargs):
         fiat_pairs = FiatExchangePair.objects.all()
@@ -87,50 +115,65 @@ class RatesAutoUpdateAction(APIView):
             fiat_pair.create_rate()
         return Response(status=status.HTTP_201_CREATED)
 
+
+
+
 class BuyDataView(APIView):
     def get(self, request, *args, **kwargs):
-        ves_brl = FiatExchangePair.objects.get(
-            currency_from__name="Bolivar",
-            currency_to__name="Real"
-        )
-        rate_ves_brl = ves_brl.last_rate
-        currencyFrom = CurrencySerializer(ves_brl.currency_from)
-        currencyTo = CurrencySerializer(ves_brl.currency_to)
-        rateInfo = BuyDataSerializer(rate_ves_brl)
+        # ves_brl = FiatExchangePair.objects.get(
+        #     currency_from__name="Bolivar", currency_to__name="Real"
+        # )
+        # rate_ves_brl = ves_brl.last_rate
+        # currencyFrom = CurrencySerializer(ves_brl.currency_from)
+        # currencyTo = CurrencySerializer(ves_brl.currency_to)
+        # rateInfo = FiatExchangeRateBuySerializer(rate_ves_brl)
 
-        return Response({
-            "currencyFrom":currencyFrom.data,
-            "currencyTo": currencyTo.data,
-            **rateInfo.data
-        }, status=status.HTTP_200_OK)
+        # return Response(
+        #     {
+        #         "currencyFrom": currencyFrom.data,
+        #         "currencyTo": currencyTo.data,
+        #         **rateInfo.data,
+        #     },
+        #     status=status.HTTP_200_OK,
+        # )
+        queryset = FiatExchangePair.objects.all()
+        serializer = CalculatorBuyRateSerializer(queryset, many=True)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
 
 class SellDataView(APIView):
     def get(self, request, *args, **kwargs):
         brl_ves = FiatExchangePair.objects.get(
-            currency_from__name="Real",
-            currency_to__name="Bolivar"
+            currency_from__name="Real", currency_to__name="Bolivar"
         )
         rate_brl_ves = brl_ves.last_rate
         currencyFrom = CurrencySerializer(brl_ves.currency_from)
         currencyTo = CurrencySerializer(brl_ves.currency_to)
-        rateInfo = SellDataSerializer(rate_brl_ves)
+        rateInfo = FiatExchangeRateSellSerializer(rate_brl_ves)
 
-        return Response({
-            "currencyFrom":currencyFrom.data,
-            "currencyTo": currencyTo.data,
-            **rateInfo.data
-        }, status=status.HTTP_200_OK)
-    
+        return Response(
+            {
+                "currencyFrom": currencyFrom.data,
+                "currencyTo": currencyTo.data,
+                **rateInfo.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
 
 class LayoutImageCoordinateSerializer(serializers.Serializer):
     type = serializers.SlugField()
     width = serializers.IntegerField(min_value=100)
     height = serializers.IntegerField(min_value=100)
-    image_base = serializers.CharField(max_length=200) 
+    image_base = serializers.CharField(max_length=200)
+
 
 class CoordinatePairSerializer(serializers.Serializer):
     x = serializers.IntegerField(min_value=0)
     y = serializers.IntegerField(min_value=0)
+
 
 class PointCoordinateSerializer(serializers.Serializer):
     has_fk = serializers.BooleanField()
@@ -138,19 +181,20 @@ class PointCoordinateSerializer(serializers.Serializer):
     text = serializers.CharField(max_length=40)
     position = CoordinatePairSerializer()
 
+
 class ImageCoordinatesSerializer(serializers.ModelSerializer):
     points = PointCoordinateSerializer(many=True)
     layout = LayoutImageCoordinateSerializer()
+
     class Meta:
         model = ImageCoordinates
         fields = ["name", "points", "font_size", "layout"]
-
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
 
         # Extraer los slugs de todos los puntos
-        slugs = [p['slug'] for p in rep.get('points', [])]
+        slugs = [p["slug"] for p in rep.get("points", [])]
 
         # Obtener los valores actualizados del modelo TipoCambio
         tipos = FiatExchangePair.objects.filter(slug__in=slugs)
@@ -158,13 +202,13 @@ class ImageCoordinatesSerializer(serializers.ModelSerializer):
         tipo_map = {t.slug: str(t.valor) for t in tipos}
 
         # Reemplazar el texto si el slug corresponde a un tipo de cambio
-        for point in rep['points']:
-            slug = point.get('slug')
+        for point in rep["points"]:
+            slug = point.get("slug")
             if slug in tipo_map:
-                point['text'] = tipo_map[slug]
+                point["text"] = tipo_map[slug]
 
         return rep
-    
+
 
 class ImageCoordinatesView(APIView):
     def get(self, request, *args, **kwargs):

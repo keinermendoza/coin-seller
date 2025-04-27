@@ -3,6 +3,7 @@ from p2p.models import (
     FiatExchangePair,
 )
 
+
 class Command(BaseCommand):
     help = "store possible new rate values for each FiatExchangePair"
 
@@ -12,6 +13,6 @@ class Command(BaseCommand):
         for pair in pairs:
             pair.store_dummy_rate()
 
-            self.stdout.write(f"guardando tipo de cambio posible para {pair}") # NEW
+            self.stdout.write(f"guardando tipo de cambio posible para {pair}")  # NEW
 
-        self.stdout.write("FiatExchangeDummyPairRate adicionados") # NEW
+        self.stdout.write("FiatExchangeDummyPairRate adicionados")  # NEW

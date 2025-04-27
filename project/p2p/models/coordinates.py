@@ -22,12 +22,11 @@ from django.db import models
 #     fontSize:100,
 #     layout: {
 #       type: "facebook-feed",
-#       width: 1200, 
+#       width: 1200,
 #       height: 1200,
 #       image_base: "/facebook-feed.jpg"
 #     }
 from rest_framework import serializers
-
 
 
 class ImageCoordinates(models.Model):
@@ -35,6 +34,3 @@ class ImageCoordinates(models.Model):
     points = models.JSONField()
     font_size = models.IntegerField()
     layout = models.JSONField()
-
-
-

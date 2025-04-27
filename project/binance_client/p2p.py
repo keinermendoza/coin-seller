@@ -69,16 +69,21 @@ def get_listing_for_currency(
 
 def extract_listing_data(
     data: Dict,
-    keys_data_to_extract: List[str] = ["price", "payTimeLimit", "minSingleTransAmount", "maxSingleTransAmount"],
-    get_trade_methods_list: bool = True
+    keys_data_to_extract: List[str] = [
+        "price",
+        "payTimeLimit",
+        "minSingleTransAmount",
+        "maxSingleTransAmount",
+    ],
+    get_trade_methods_list: bool = True,
 ) -> Dict:
     "takes a single dict a returns the selected indicated by keys_data_to_extract"
-    
+
     listings_key = "adv"
-    listings_dict = {} 
+    listings_dict = {}
 
     for key in keys_data_to_extract:
-        listings_dict[key] = data[listings_key][key]  
+        listings_dict[key] = data[listings_key][key]
 
     if get_trade_methods_list:
         listings_dict["tradeMethods"] = [
@@ -86,25 +91,25 @@ def extract_listing_data(
         ]
     return listings_dict
 
+
 def extract_publisher_data(
-    data: Dict,
-    keys_data_to_extract: List[str] = ["nickName", "positiveRate"]
+    data: Dict, keys_data_to_extract: List[str] = ["nickName", "positiveRate"]
 ) -> Dict:
     "takes a single dict a returns the selected indicated by keys_data_to_extract"
     publishers_key = "advertiser"
     publisher_dict = {}
 
     for key in keys_data_to_extract:
-        publisher_dict[key] = data[publishers_key][key]  
+        publisher_dict[key] = data[publishers_key][key]
     return publisher_dict
 
 
-def extract_relevant_data(data:Dict, **kwargs):
+def extract_relevant_data(data: Dict, **kwargs):
     relevant_data = []
     for item in data["data"]:
-        item_data :Dict = extract_listing_data(item, **kwargs) | extract_publisher_data(item, **kwargs)
+        item_data: Dict = extract_listing_data(item, **kwargs) | extract_publisher_data(
+            item, **kwargs
+        )
         relevant_data.append(item_data)
 
     return relevant_data
-
-

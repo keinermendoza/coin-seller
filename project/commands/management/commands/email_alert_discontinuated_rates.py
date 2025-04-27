@@ -18,24 +18,21 @@ class Command(BaseCommand):
             if not pair.last_rate:
                 continue  # evita error si no hay valor publicado
 
-
-
             market_rate = pair.get_market_rate()
             min_limit = pair.get_market_rate_plus_minimum_margin()
             max_limit = pair.get_last_published_rate_plus_maximum_margin()
             last_rate = pair.last_rate.rate
             created_local_time = timezone.localtime(pair.created)
 
-
             if pair.rate_is_inside_min_border() is not True:
                 send_mail(
-                    subject=f'Par {pair} debajo del mínimo!!',
+                    subject=f"Par {pair} debajo del mínimo!!",
                     message=(
                         f'Alerta! El tipo de cambio {pair} fué fijado en {pair.currency_to.symbol} {last_rate} desde {created_local_time.strftime("%H:%M %d/%m/%Y")}\n'
-                        f'el valor de mercado está cayendo hasta {pair.currency_to.symbol} {market_rate}, '
-                        f'y el tipo de cambio {pair.currency_to.symbol} {last_rate} ya es mayor que límite de seguridad de {pair.currency_to.symbol} {min_limit}.\n'
-                        f'Para evitar perdidas visite https://coin.keinermendoza.com/{settings.ADMIN_URL} para actualizar el tipo de cambio.\n'
-                        f'enviado desde entorno: {settings.ENVIORMENT}'
+                        f"el valor de mercado está cayendo hasta {pair.currency_to.symbol} {market_rate}, "
+                        f"y el tipo de cambio {pair.currency_to.symbol} {last_rate} ya es mayor que límite de seguridad de {pair.currency_to.symbol} {min_limit}.\n"
+                        f"Para evitar perdidas visite https://coin.keinermendoza.com/{settings.ADMIN_URL} para actualizar el tipo de cambio.\n"
+                        f"enviado desde entorno: {settings.ENVIORMENT}"
                     ),
                     from_email=settings.EMAIL_HOST_USER,
                     recipient_list=[settings.EMAIL_OWNER],
@@ -44,14 +41,13 @@ class Command(BaseCommand):
 
             if pair.rate_is_inside_max_border() is not True:
                 send_mail(
-                    subject=f'Par {pair} encima del máximo!!',
+                    subject=f"Par {pair} encima del máximo!!",
                     message=(
                         f'Alerta! El tipo de cambio {pair} está fijado en {pair.currency_to.symbol} {last_rate} desde {created_local_time.strftime("%H:%M %d/%m/%Y")}\n'
-                        f'el valor de mercado ha subido hasta {pair.currency_to.symbol} {market_rate} y ha excedido '
-                        f'el límite superior de {pair.currency_to.symbol} {max_limit}.\n'
-                        f'Para evitar perder posibles clientes visite https://coin.keinermendoza.com/{settings.ADMIN_URL} para actualizar el tipo de cambio\n'
-                        f'enviado desde entorno: {settings.ENVIORMENT}'
-
+                        f"el valor de mercado ha subido hasta {pair.currency_to.symbol} {market_rate} y ha excedido "
+                        f"el límite superior de {pair.currency_to.symbol} {max_limit}.\n"
+                        f"Para evitar perder posibles clientes visite https://coin.keinermendoza.com/{settings.ADMIN_URL} para actualizar el tipo de cambio\n"
+                        f"enviado desde entorno: {settings.ENVIORMENT}"
                     ),
                     from_email=settings.EMAIL_HOST_USER,
                     recipient_list=[settings.EMAIL_OWNER],

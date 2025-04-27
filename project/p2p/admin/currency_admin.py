@@ -8,9 +8,11 @@ from p2p.models import (
     CurrencyOperationPreferences,
 )
 
+
 @admin.register(Currency)
 class CurrencyAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "created", "edited")
+
 
 @admin.register(CurrencyExchangeConditions)
 class CurrencyExchangeConditionsAdmin(admin.ModelAdmin):
@@ -34,6 +36,7 @@ class CurrencyExchangeConditionsAdmin(admin.ModelAdmin):
 
     def maximum(self, obj):
         return f"{obj.extra_data_listing.get('maxSingleTransAmount', ' - ')}  {obj.currency.symbol}"
+
 
 @admin.register(CurrencyOperationPreferences)
 class CurrencyOperationPreferencesAdmin(admin.ModelAdmin):

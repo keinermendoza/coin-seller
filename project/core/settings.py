@@ -25,7 +25,7 @@ DEBUG = int(os.environ.get("DEBUG", default=0))
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
-CSRF_TRUSTED_ORIGINS =  os.environ.get('CSRF_TRUSTED_ORIGINS').split(' ')
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(" ")
 
 
 # Application definition
@@ -38,13 +38,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "p2p.apps.P2PConfig",
-    'commands',
-    'tasks',
-    'django_extensions',
-    'rest_framework',
+    "commands",
+    "tasks",
+    "django_extensions",
+    "rest_framework",
     "django_vite",
-    'allauth',
-    'allauth.account',
+    "allauth",
+    "allauth.account",
 ]
 
 MIDDLEWARE = [
@@ -126,10 +126,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 STATIC_URL = "static/"
-STATICFILES_DIRS = [
-  BASE_DIR / "assets",
-  BASE_DIR / "static"
-]
+STATICFILES_DIRS = [BASE_DIR / "assets", BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
@@ -139,46 +136,42 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,  # importante
-
-    'formatters': {
-        'verbose': {
-            'format': '[{asctime}] {levelname} {name} {message}',
-            'style': '{',
+    "version": 1,
+    "disable_existing_loggers": False,  # importante
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} {name} {message}",
+            "style": "{",
         },
     },
-
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'  # Filtro para no enviar emails en modo DEBUG
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse"  # Filtro para no enviar emails en modo DEBUG
         }
     },
-
-    'handlers': {
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/celery.log'),
-            'formatter': 'verbose',
+    "handlers": {
+        "file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/celery.log"),
+            "formatter": "verbose",
         },
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+        },
     },
-
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': True,
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "INFO",
+            "propagate": True,
         },
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
         },
     },
 }
@@ -194,43 +187,39 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
-USE_EMAIL = bool(int(os.environ.get('USE_EMAIL', 0)))
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")
+USE_EMAIL = bool(int(os.environ.get("USE_EMAIL", 0)))
 if USE_EMAIL:
-    EMAIL_HOST = os.environ.get('EMAIL_HOST')
-    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 0))
-    EMAIL_USE_TLS = bool(int(os.environ.get('EMAIL_USE_TLS', 0)))
+    EMAIL_HOST = os.environ.get("EMAIL_HOST")
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+    EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 0))
+    EMAIL_USE_TLS = bool(int(os.environ.get("EMAIL_USE_TLS", 0)))
 
-    SERVER_EMAIL =  os.environ.get('EMAIL_OWNER')  # Correo que aparecerá como remitente
-    ADMINS = [('Admin',  os.environ.get('EMAIL_OWNER'))]  # Correo al que se enviarán los errores
-
+    SERVER_EMAIL = os.environ.get("EMAIL_OWNER")  # Correo que aparecerá como remitente
+    ADMINS = [
+        ("Admin", os.environ.get("EMAIL_OWNER"))
+    ]  # Correo al que se enviarán los errores
 
     MANAGERS = ADMINS
 
-EMAIL_OWNER = os.environ.get('EMAIL_OWNER') 
-ADMIN_URL = os.environ.get('ADMIN_URL')
-ENVIORMENT = os.environ.get('ENVIORMENT')
+EMAIL_OWNER = os.environ.get("EMAIL_OWNER")
+ADMIN_URL = os.environ.get("ADMIN_URL")
+ENVIORMENT = os.environ.get("ENVIORMENT")
 
-DJANGO_VITE = {
-  "default": {
-    "dev_mode": DEBUG
-  }
-}
+DJANGO_VITE = {"default": {"dev_mode": DEBUG}}
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAdminUser',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAdminUser",
     ]
 }
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
-
+    "django.contrib.auth.backends.ModelBackend",
     # `allauth` specific authentication methods, such as login by email
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 ACCOUNT_ADAPTER = "p2p.adapters.NoSignupAccountAdapter"
