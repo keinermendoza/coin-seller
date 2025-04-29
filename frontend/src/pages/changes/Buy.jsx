@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select"
 
 import { useChanges } from "@/contexts/ChangeContext"
+import { useTradeRequest } from "@/contexts/TradeRequestContext"
 import React from "react"
 
 const price = {
@@ -42,6 +43,8 @@ const amount = {
 export default function Buy() {
   const [selectedPair, setSelectedPair] = useState(0)
   const {buyPairs} = useChanges()
+  const {buyRequests} = useTradeRequest()
+
   function onSubmit(data) {
     toast(
         "You submitted the following values:", {
@@ -55,6 +58,15 @@ export default function Buy() {
 
   return (
     <section>
+      {buyRequests && 
+      <div>
+        {buyRequests.map((req) => (
+          <li key={req.id}>{req.requested_amount}</li>
+        )
+      )}
+      </div>
+      }
+
       <div className="text-slate-900 flex flex-col items-center justify-center text-center gap-4 my-4">
         <p className="text-xl font-medium">Calculadora de Cambios</p>
         {buyPairs.length > 0 ? (

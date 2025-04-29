@@ -23,8 +23,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+import RequestList from "@/components/RequestList"
 
 import { useChanges } from "@/contexts/ChangeContext"
+import { useTradeRequest } from "@/contexts/TradeRequestContext"
+
 // const data = {
 //   currencyTo: {
 //       image: "",
@@ -58,6 +61,8 @@ const amount = {
 export default function Sell() {
   const [selectedPair, setSelectedPair] = useState(0)
   const {sellPairs} = useChanges()
+  const {sellRequests} = useTradeRequest()
+  
 
   function onSubmit(data) {
     toast(
@@ -72,6 +77,23 @@ export default function Sell() {
   
   return (
     <section>
+      {sellRequests &&  <RequestList data={sellRequests} titleSection="Peticiones de cambios" />}
+
+      <Separator className="my-4" />
+
+
+      {sellPairs[selectedPair] &&
+        <Alert className="bg-red-100" variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Importante!!</AlertTitle>
+        <AlertDescription>
+          Vender USDT por menos de {sellPairs[selectedPair]?.rateInfo.sell_price_limit} produce perdidas 
+        </AlertDescription>
+      </Alert>}
+
+      <Separator className="my-4" />
+
+
       <div className="text-slate-900 flex flex-col items-center justify-center text-center gap-4 my-4">
         <p className="text-xl font-medium">Calculadora de Cambios</p>
         {sellPairs.length > 0 ? (
@@ -95,27 +117,20 @@ export default function Sell() {
         
 
       </div>
+
+
       {sellPairs[selectedPair] && <Calculator data={sellPairs[selectedPair]} />}
       
 
-      <Separator className="my-4" />
 
-      {sellPairs[selectedPair] &&
-        <Alert className="bg-red-100" variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Importante!!</AlertTitle>
-        <AlertDescription>
-          Vender USDT por menos de {sellPairs[selectedPair]?.rateInfo.sell_price_limit} produce perdidas 
-        </AlertDescription>
-      </Alert>}
       
-      <Separator className="my-4" />
+      {/* <Separator className="my-4" /> */}
 
 
-      <div className="text-slate-900 text-center my-4">
+      {/* <div className="text-slate-900 text-center my-4">
         <p className="text-xl font-medium">Registro de Ventas en Binance</p>
       </div>
-      <FormRegisterOperation onSubmit={onSubmit} price={price} amount={amount} />
+      <FormRegisterOperation onSubmit={onSubmit} price={price} amount={amount} /> */}
       
     </section>
     

@@ -5,14 +5,15 @@ from . import api
 
 app_name = "p2p"
 urlpatterns = [
-    path("api/sell", api.SellDataView.as_view(), name="sell_data"),
+    
+    path("api/trade-requests", api.TradeRequestView.as_view(), name="preferences"),
+
     path("api/changes", api.CalculatorRatesApiView.as_view(), name="ves_changes_data"),
     path(
         "api/rates/autoupdate",
         api.RatesAutoUpdateAction.as_view(),
         name="rates_autoupdate",
     ),
-    path("api/buy", api.BuyDataView.as_view(), name="buy_data"),
     path("api/images", api.ImageCoordinatesView.as_view(), name="images"),
     re_path(r"^client.*$", views.ClientView.as_view(), name="react_client"),
     path("", RedirectView.as_view(url="client", permanent=False)),

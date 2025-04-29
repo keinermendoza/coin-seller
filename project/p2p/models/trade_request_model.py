@@ -61,14 +61,16 @@ class TradeRequestManager(models.Manager):
 
     def brl_to_ves_pending(self):
         return self.get_queryset().brl_to_ves().open()
-
+    
+    def user_suscribed(self, user):
+        return self.get_queryset().user_suscribed(user)
 
 class TradeRequest(TimeStampedModel):
     class TradeOperationStatus(models.IntegerChoices):
-        OPEN = 1, "Recently opened"
-        ONE_SIDE_READY = 2, "One side is ready"
-        COMPLETED = 3, "Completed"
-        CANCELLED = 4, "Cancelled"
+        OPEN = 1, "Pendiente"
+        ONE_SIDE_READY = 2, "Media operación realizada"
+        COMPLETED = 3, "Dinero entregado al destinatario"
+        CANCELLED = 4, "Operación cancelada"
 
     created_by = models.ForeignKey(
         User,

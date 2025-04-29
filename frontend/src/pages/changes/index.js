@@ -1,5 +1,5 @@
 import Buy from "./Buy";
 import Sell from "./Sell";
-import Update from "./Update";
+import Requests from "./Requests";
 
-export {Buy, Sell, Update}
+export {Buy, Sell, Requests}

@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Sell, Buy, Update } from "@/pages/changes"
+import { Sell, Buy, Requests } from "@/pages/changes"
 import { ChangesProvider } from "@/contexts/ChangeContext"
 export default function LayoutChanges() {
   return (
@@ -20,7 +20,7 @@ export default function LayoutChanges() {
           <Buy />
       </TabsContent>
       <TabsContent value="update">
-          <Update />
+          <Requests />
       </TabsContent>
       </Tabs>
     </ChangesProvider>
