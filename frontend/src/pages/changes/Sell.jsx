@@ -109,8 +109,7 @@ export default function Sell() {
         </Select>)
         : (
           <div className="text-sm">
-            <p>No estás suscrito a ningun cambio como vendedor</p>
-            <p>Para suscribirte a un cambio ve a <Link to="#suscription">suscribirse</Link></p>
+            <p>No hay operaciones para mostrar</p>
           </div>
         )  
       }

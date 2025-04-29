@@ -45,6 +45,8 @@ class FiatPairBasicDicstSerializer(serializers.Serializer):
     side = serializers.CharField(source='side_operation')
     currencyFrom = serializers.CharField(source='pair__currency_from__code')
     currencyTo = serializers.CharField(source='pair__currency_to__code')
+    currencyFromSymbol = serializers.CharField(source='pair__currency_from__symbol')
+
 
 class TradeRequestView(ListCreateAPIView):
     serializer_class = TradeRequestSerializer
@@ -57,7 +59,13 @@ class TradeRequestView(ListCreateAPIView):
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        fiat_pair_list = request.user.fiat_preferences.values("side_operation" ,"pair__id", "pair__currency_from__code", "pair__currency_to__code")
+        fiat_pair_list = request.user.fiat_preferences.values(
+            "side_operation",
+            "pair__id",
+            "pair__currency_from__code",
+            "pair__currency_to__code",
+            "pair__currency_from__symbol",
+        )
         fiat_pair_serializer = FiatPairBasicDicstSerializer(fiat_pair_list, many=True)
         data = {
             "fiat_suscriptions": fiat_pair_serializer.data,

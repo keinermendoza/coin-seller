@@ -36,17 +36,22 @@ import timeFormat from "@/lib/timeFormat"
 
 function RequestDialogue({data, pair, onSubmit}) {
     const sideWord =  pair.side === "S" ? "venta" : "compra";
+    const sideWordPast =  pair.side === "S" ? "vendió" : "compró";
+    const sideWordVerb =  pair.side === "S" ? "vender" : "comprar";
+    const sideWordPastPerfect =  pair.side === "S" ? "vendidos" : "comprados";
+
+    const fiatCode =  pair.side === "S" ? pair.currencyTo : pair.currencyFrom;
 
     const price = {
-        label: "Precio de vender 1 USDT",
-        placeholder: "Ejemplo: 95670",
-        helpText: "Esto es para registrar el precio al que vendió los USDT en binance.",
+        label: `Precio de ${sideWordVerb} 1 USDT`,
+        placeholder: "Ejemplo: 100",
+        helpText: `El precio en ${fiatCode} al que ${sideWordPast} cada USDT en binance.`,
       }
       
       const amount = {
-        label: "Cantidad de USDT vendidos",
-        placeholder: "Ejemplo: 10",
-        helpText: "Esto es para registrar la cantidad de USDT que le compraron en binance",
+        label: `Cantidad de USDT ${sideWordPastPerfect}`,
+        placeholder: "Ejemplo: 100",
+        helpText: `Cuantos USDT ${sideWordPast} en binance`,
       }
     
     return (
@@ -78,7 +83,7 @@ function RequestItem({data, onSubmit}) {
         <Card>
         <CardHeader>
             <CardTitle>Cambio de {pair.currencyFrom} a {pair.currencyTo}</CardTitle>
-            <CardDescription>Cliente desea transferir {data.requested_amount} {pair.currencyFrom} </CardDescription>
+            <CardDescription>Cliente desea transferir {parseFloat(data.requested_amount)} {pair.currencyFrom} </CardDescription>
         </CardHeader>
         <CardContent>
             <p className="mb-1 text-sm text-black/60">Creado el {timeFormat(data.created)}</p>

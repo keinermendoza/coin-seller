@@ -59,6 +59,10 @@ export const TradeRequestProvider = ({ children }) => {
     return () => clearInterval(intervalo);
   }, [refetchTradeRequests]);
 
+  const insertNewTradeRequest = (trade) => {
+    setTradeRequests((prev) => [...prev , trade ])
+  }
+
 
   function getFiatPair(pairId) {
     const pair = fiatSuscriptions?.filter(pair => pair.id === pairId)[0]
@@ -66,7 +70,7 @@ export const TradeRequestProvider = ({ children }) => {
   }
 
   return (
-    <TradeRequestContext.Provider value={{ buyRequests, sellRequests, getFiatPair}}>
+    <TradeRequestContext.Provider value={{ insertNewTradeRequest, buyRequests, sellRequests, fiatSuscriptions, getFiatPair}}>
       {children}
     </TradeRequestContext.Provider>
   );

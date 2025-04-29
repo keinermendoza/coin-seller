@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
+import {useState} from "react"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -42,7 +42,9 @@ import {
 //   });
 
 export function FormRegisterRequest({pairs, onSubmit}) {
-  const form = useForm({
+    const [selectedPair, setSelectedPair] = useState(pairs[0]);
+  
+    const form = useForm({
     defaultValues: {
         pair: pairs[0].id,
         requested_amount: '',
@@ -63,7 +65,14 @@ export function FormRegisterRequest({pairs, onSubmit}) {
                 <FormItem>
                 <FormLabel>Selecciona el cambio a usar</FormLabel>
                 <FormControl>
-                    <Select  onValueChange={field.onChange} value={field.value} >
+                    <Select  
+                    onValueChange={(value) => {
+                        field.onChange(value);
+                        const selected = pairs.find((p) => p.id == value);
+                        setSelectedPair(selected);
+                      }}
+                    value={field.value} 
+                    >
                         <SelectTrigger>
                             <SelectValue placeholder="Seleccionar cambio" />
                         </SelectTrigger>
@@ -86,9 +95,14 @@ export function FormRegisterRequest({pairs, onSubmit}) {
             name="requested_amount"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Valor enviado</FormLabel>
+                <FormLabel htmlFor="amount">Valor enviado</FormLabel>
                 <FormControl>
-                    <Input className="bg-white"  {...field} />
+                    <label className="flex items-center">
+                        <span className="px-3 py-2 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md text-sm">
+                            {selectedPair && selectedPair.currencyFromSymbol}
+                        </span>
+                        <Input id="amount" className="bg-white rounded-l-none "  {...field} />
+                    </label>
                 </FormControl>
                 <FormDescription className="text-start text-[0.75rem] italic">
                     Valor que el cliente transferirá a nuestras cuentas

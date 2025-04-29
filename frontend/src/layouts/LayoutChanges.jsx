@@ -10,7 +10,7 @@ export default function LayoutChanges() {
       <TabsList>
           <TabsTrigger value="sell">Vender</TabsTrigger>
           <TabsTrigger value="buy">Comprar</TabsTrigger>
-          <TabsTrigger value="update">Actualizar</TabsTrigger>
+          <TabsTrigger value="requests">Solicitudes</TabsTrigger>
 
       </TabsList>
       <TabsContent value="sell">
@@ -19,7 +19,7 @@ export default function LayoutChanges() {
       <TabsContent value="buy">
           <Buy />
       </TabsContent>
-      <TabsContent value="update">
+      <TabsContent value="requests">
           <Requests />
       </TabsContent>
       </Tabs>

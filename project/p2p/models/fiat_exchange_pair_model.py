@@ -13,7 +13,7 @@ User = get_user_model()
 class FiatExchangePairQuerySet(models.QuerySet):
     def user_suscribed(self, user: User, **kwargs):
         if prefs_ids := user.fiat_preferences.filter(**kwargs).values_list(
-            "id", flat=True
+            "pair", flat=True
         ):
             return self.filter(id__in=prefs_ids)
         return self.none()

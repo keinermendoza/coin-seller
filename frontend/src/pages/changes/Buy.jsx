@@ -12,7 +12,6 @@ import {
 
 import { Link } from "react-router"
 
-
 import {
   Select,
   SelectContent,
@@ -25,7 +24,7 @@ import {
 
 import { useChanges } from "@/contexts/ChangeContext"
 import { useTradeRequest } from "@/contexts/TradeRequestContext"
-import React from "react"
+import RequestList from "@/components/RequestList"
 
 const price = {
   label: "Precio de comprar 1 USDT",
@@ -58,14 +57,19 @@ export default function Buy() {
 
   return (
     <section>
-      {buyRequests && 
-      <div>
-        {buyRequests.map((req) => (
-          <li key={req.id}>{req.requested_amount}</li>
-        )
-      )}
-      </div>
-      }
+      {buyRequests &&  <RequestList data={buyRequests} titleSection="Peticiones de cambios" />}
+      <Separator className="my-4" />
+      
+      {buyPairs[selectedPair] &&
+        <Alert className="bg-red-100" variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Importante!!</AlertTitle>
+        <AlertDescription>
+          Comprar USDT por más de {buyPairs[selectedPair].rateInfo.buy_price_limit} produce perdidas 
+        </AlertDescription>
+      </Alert>}
+
+      <Separator className="my-4" />
 
       <div className="text-slate-900 flex flex-col items-center justify-center text-center gap-4 my-4">
         <p className="text-xl font-medium">Calculadora de Cambios</p>
@@ -82,34 +86,19 @@ export default function Buy() {
         </Select>)
         : (
           <div className="text-sm">
-            <p>No estás suscrito a ningun cambio como comprador</p>
-            <p>Para suscribirte a un cambio ve a <Link to="#suscription">suscribirse</Link></p>
+            <p>No hay operaciones para mostrar</p>
           </div>
         )  
       }
         
 
       </div>
+      <Separator className="my-4" />
 
       {buyPairs[selectedPair] && <Calculator data={buyPairs[selectedPair]} />}
 
-      <Separator className="my-4" />
-      
-      {buyPairs[selectedPair] &&
-        <Alert className="bg-red-100" variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Importante!!</AlertTitle>
-        <AlertDescription>
-          Comprar USDT por más de {buyPairs[selectedPair].rateInfo.buy_price_limit} produce perdidas 
-        </AlertDescription>
-      </Alert>}
 
-      <Separator className="my-4" />
 
-      <div className="text-slate-900 text-center my-4">
-        <p className="text-xl font-medium">Registro de Compras en Binance</p>
-      </div>
-      <FormRegisterOperation onSubmit={onSubmit} price={price} amount={amount}  />
     </section>
   )
 }

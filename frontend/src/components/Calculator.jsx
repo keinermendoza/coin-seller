@@ -91,7 +91,7 @@ export default function Calculator({data}) {
                     <span className="target_symbol">{data.currencyTo.symbol}</span>
                     <span id="target_amount">{parseFloat(rate)}</span>
                 </p>
-                <p className="text-[0.675rem] italic">Valor Actualizado el <span id="updated_at">{timeFormat(data.created)}</span></p>
+                <p className="text-[0.675rem] italic">Valor Actualizado el <span id="updated_at">{timeFormat(data.rateInfo.created)}</span></p>
             </div>
 
         </div>

@@ -29,7 +29,7 @@ class TradeRequestQuerySet(models.QuerySet):
         return self.filter(pair__slug="brl_ves")
 
     def user_suscribed(self, user: User):
-        if prefs_ids := user.fiat_preferences.values_list("id", flat=True):
+        if prefs_ids := user.fiat_preferences.values_list("pair", flat=True):
             return self.filter(pair__in=prefs_ids)
         return self.none()
 

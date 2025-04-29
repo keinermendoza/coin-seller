@@ -7,9 +7,11 @@ import { Separator } from "@/components/ui/separator"
 import axios from "@/lib/axios";
 import { FormRegisterRequest } from "@/components/FormRegisterRequest"
 import { toast } from "sonner"
-
+import { useTradeRequest } from "@/contexts/TradeRequestContext"
 
 export default function Requests() {
+  const {fiatSuscriptions, insertNewTradeRequest} = useTradeRequest()
+
   const displaySuccess = () => {
       toast(
         "Peticion de cambio registrada", {
@@ -24,21 +26,22 @@ export default function Requests() {
     const resp = await axios.post('/api/trade-requests', data)
     if (resp.status === 201) {
       displaySuccess();
+      insertNewTradeRequest(resp.data)
       console.log(resp.data)
     }
   }
 
-  const fiat_pairs = [
-        {
-            "id": 2,
-            "currencyFrom": "VES",
-            "currencyTo": "BRL"
-        }
-    ]
+  // const fiat_pairs = [
+  //       {
+  //           "id": 2,
+  //           "currencyFrom": "VES",
+  //           "currencyTo": "BRL"
+  //       }
+  //   ]
 
   return (
     <section className="text-slate-900 text-center mt-4 space-y-4">
-      <FormRegisterRequest onSubmit={onSubmit} pairs={fiat_pairs} />
+      <FormRegisterRequest onSubmit={onSubmit} pairs={fiatSuscriptions} />
     </section>
   )
 }
