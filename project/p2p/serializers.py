@@ -5,18 +5,50 @@ from p2p.models import (
     FiatExchangePairRate,
     ImageCoordinates,
     TradeRequest,
+    Exchange
 
 )
 
-class TradeRequestSerializer(serializers.ModelSerializer):
-    status = serializers.SerializerMethodField()
+class ExchangeSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ["amount", "price", "registered_by", "created"]  
+        model = Exchange   
 
+class TradeRequestSerializer(serializers.ModelSerializer):
+    status_text = serializers.SerializerMethodField()
+    exchange_buy = ExchangeSerializer(read_only=True)
+    exchange_sell =  ExchangeSerializer(read_only=True)
     class Meta:
         fields = "__all__"
         model = TradeRequest
 
-    def get_status(self, obj):
+    def get_status_text(self, obj):
         return obj.get_status_display()
+    
+class ExchangeCreateAssociateSerializer(serializers.ModelSerializer):
+    """
+    perform creation of Exchange operation 
+    and associates to corresponding TradeRequest instance
+    """
+    trade_request_id = serializers.IntegerField()
+    class Meta:
+        model = Exchange
+        fields = "__all__"
+
+    def create(self, validated_data):
+        side = validated_data.get('side_operation')
+        relation = {
+            Exchange.ExchangeSideOperation.BUY: "exchange_buy",
+            Exchange.ExchangeSideOperation.SELL:"exchange_sell"
+        }
+        trade_id = validated_data.pop('trade_request_id')
+        exchange = Exchange.objects.create(**validated_data)
+        trade = TradeRequest.objects.get(id=trade_id)
+        setattr(trade, relation[side], exchange)
+        trade.save()
+
+        return exchange
+    
 ### for Calculator exchanges functionality
 class FiatExchangeRateSellSerializer(serializers.ModelSerializer):
     """

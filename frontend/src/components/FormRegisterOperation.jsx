@@ -31,7 +31,7 @@ const FormSchema = z.object({
       .transform((val) => Number(val)),
   });
 
-export function FormRegisterOperation({price, amount, onSubmit}) {
+export function FormRegisterOperation({price, amount, onSubmit, extraParamsSubmit}) {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -46,7 +46,7 @@ export function FormRegisterOperation({price, amount, onSubmit}) {
     <div className="w-full max-w-5xl mx-auto bg-gray-300 rounded-xl p-4 ">
 
         <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit((data) => onSubmit(data, extraParamsSubmit.trade_request_id, extraParamsSubmit.side_operation))} className="space-y-6">
             <FormField
             control={form.control}
             name="price"

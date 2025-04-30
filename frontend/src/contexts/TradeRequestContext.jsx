@@ -10,8 +10,32 @@ export const TradeRequestProvider = ({ children }) => {
 
   const [buyRequests, setBuyRequests] = useState([])
   const [sellRequests, setSellRequests] = useState([])
+  
+  const [historyRequests, setHistoryRequests] = useState([])
+  const [presentRequests, setPresentRequests] = useState([])
 
-  const diferentiateRequests = () => {
+  const diferentiateRequestByStatus = () => {
+
+    const { present, history } = tradeRequests.reduce(
+      (acc, item) => {
+          if (item.status < 3) {
+            acc.present.push(item);
+          } else if (item.status == 3) {
+          acc.history.push(item);
+          }
+        return acc;
+      },
+      { present: [], history: [] }
+    );
+
+    setHistoryRequests(history)
+    setPresentRequests(present)
+
+    diferentiateRequestBySide()    
+
+  }
+
+  const diferentiateRequestBySide = () => {
     const { buyIds, sellIds } = fiatSuscriptions.reduce(
       (acc, item) => {
         if (item.side === "B") {
@@ -24,10 +48,10 @@ export const TradeRequestProvider = ({ children }) => {
       { buyIds: [], sellIds: [] }
     );
 
-    const buys = [];
+  const buys = [];
   const sells = [];
 
-  tradeRequests.forEach(item => {
+  presentRequests.forEach(item => {
     if (buyIds.includes(item.pair)) buys.push(item);
     else if (sellIds.includes(item.pair)) sells.push(item);
   });
@@ -37,17 +61,23 @@ export const TradeRequestProvider = ({ children }) => {
 
   }
 
+  const updateTradeRequest = (tradeId, tradeObj) => {
+    setTradeRequests((prevTrades) => 
+      prevTrades.map((trade) => trade.id == tradeId ? tradeObj : trade)
+    )
+  }
+
   useEffect(() => {
     if(data) {
       setFiatSuscriptions(data.fiat_suscriptions)
       setTradeRequests(data.results)
-      diferentiateRequests()
+      diferentiateRequestByStatus()
     }
   }, [data])
 
   useEffect(() => {
-    if (fiatSuscriptions.length && tradeRequests.length) {
-      diferentiateRequests();
+    if (fiatSuscriptions?.length && tradeRequests?.length) {
+      diferentiateRequestByStatus()
     }
   }, [fiatSuscriptions, tradeRequests]);
 
@@ -70,7 +100,7 @@ export const TradeRequestProvider = ({ children }) => {
   }
 
   return (
-    <TradeRequestContext.Provider value={{ insertNewTradeRequest, buyRequests, sellRequests, fiatSuscriptions, getFiatPair}}>
+    <TradeRequestContext.Provider value={{ historyRequests, insertNewTradeRequest, updateTradeRequest, buyRequests, sellRequests, fiatSuscriptions, getFiatPair}}>
       {children}
     </TradeRequestContext.Provider>
   );

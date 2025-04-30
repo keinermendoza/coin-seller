@@ -11,16 +11,16 @@ User = get_user_model()
 
 class TradeRequestQuerySet(models.QuerySet):
     def open(self):
-        return self.filter(status=self.model.TradeOperationStatus.OPEN)
+        return self.filter(status=self.model.TradeStatus.OPEN)
 
     def one_side_ready(self):
-        return self.filter(status=self.model.TradeOperationStatus.ONE_SIDE_READY)
+        return self.filter(status=self.model.TradeStatus.ONE_SIDE_READY)
 
     def completed(self):
-        return self.filter(status=self.model.TradeOperationStatus.COMPLETED)
+        return self.filter(status=self.model.TradeStatus.COMPLETED)
 
     def cancelled(self):
-        return self.filter(status=self.model.TradeOperationStatus.CANCELLED)
+        return self.filter(status=self.model.TradeStatus.CANCELLED)
 
     def ves_to_brl(self):
         return self.filter(pair__slug="ves_brl")
@@ -66,7 +66,7 @@ class TradeRequestManager(models.Manager):
         return self.get_queryset().user_suscribed(user)
 
 class TradeRequest(TimeStampedModel):
-    class TradeOperationStatus(models.IntegerChoices):
+    class TradeStatus(models.IntegerChoices):
         OPEN = 1, "Pendiente"
         ONE_SIDE_READY = 2, "Media operación realizada"
         COMPLETED = 3, "Dinero entregado al destinatario"
@@ -103,7 +103,7 @@ class TradeRequest(TimeStampedModel):
     rate = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
     result = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
     status = models.PositiveIntegerField(
-        choices=TradeOperationStatus.choices, default=TradeOperationStatus.OPEN
+        choices=TradeStatus.choices, default=TradeStatus.OPEN
     )
 
     objects = TradeRequestManager()

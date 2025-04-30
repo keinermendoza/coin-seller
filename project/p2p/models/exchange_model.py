@@ -30,5 +30,4 @@ class Exchange(TimeStampedModel):
     def __str__(self):
         user = self.registered_by.username if self.registered_by else "Unknown"
         side = self.get_side_operation_display()
-        status = self.get_status_display()
-        return f"{side} {self.amount} at {self.price} ({status}) by {user}"
+        return f"{side} {self.amount} at {self.price} by {user}"

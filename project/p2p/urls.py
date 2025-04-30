@@ -6,7 +6,8 @@ from . import api
 app_name = "p2p"
 urlpatterns = [
     
-    path("api/trade-requests", api.TradeRequestView.as_view(), name="preferences"),
+    path("api/trade-requests", api.TradeRequestView.as_view(), name="trade_requests"),
+    path("api/trade-requests/register-exchange", api.ExchangeAPIView.as_view(), name="register_exchange"),
 
     path("api/changes", api.CalculatorRatesApiView.as_view(), name="ves_changes_data"),
     path(

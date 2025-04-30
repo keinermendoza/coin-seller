@@ -1,11 +1,8 @@
 import { useState } from "react"
 
 import Calculator from "@/components/Calculator"
-import { FormRegisterOperation } from "@/components/FormRegisterOperation"
 import { Separator } from "@/components/ui/separator"
-import { toast } from "sonner"
 import { AlertCircle } from "lucide-react"
-import { Link } from "react-router"
 import {
   Alert,
   AlertDescription,
@@ -27,57 +24,48 @@ import RequestList from "@/components/RequestList"
 
 import { useChanges } from "@/contexts/ChangeContext"
 import { useTradeRequest } from "@/contexts/TradeRequestContext"
+import { toast } from "sonner"
+import axios from "@/lib/axios"
 
-// const data = {
-//   currencyTo: {
-//       image: "",
-//       name: "Bolivar",
-//       symbol: "Bs",
-//       code: "VES"
-//   },
-//   currencyFrom: {
-//       image: "",
-//       name: "Real",
-//       symbol: "R$",
-//       code: "BRL"
-//   },
-//   rate: 15.670,
-//   sell_price_limit: 98.000, 
-//   created: "14/04/25 13:45"
-// }
-
-const price = {
-  label: "Precio de vender 1 USDT",
-  placeholder: "Ejemplo: 95670",
-  helpText: "Esto es para registrar el precio al que vendió los USDT en binance.",
-}
-
-const amount = {
-  label: "Cantidad de USDT vendidos",
-  placeholder: "Ejemplo: 10",
-  helpText: "Esto es para registrar la cantidad de USDT que le compraron en binance",
-}
 
 export default function Sell() {
   const [selectedPair, setSelectedPair] = useState(0)
   const {sellPairs} = useChanges()
-  const {sellRequests} = useTradeRequest()
+  const {sellRequests, updateTradeRequest} = useTradeRequest()
+
+  async function onSubmit(formData, trade_request_id, side_operation) {
+    const body = {
+      ...formData,
+      trade_request_id,
+      side_operation,
+    }
+
+    const resp = await axios.post("/api/trade-requests/register-exchange", body)
+    if (resp.status === 201) {
+      toast(
+          "You submitted the following values:", {
+          description: JSON.stringify(formData, null, 2),
+          action: {
+              label: "cerrar",
+              onClick: () => console.log("Undo"),
+          },
+      })
+
+      updateTradeRequest(resp.data.id, resp.data)
+    }
+  }
   
 
-  function onSubmit(data) {
-    toast(
-        "You submitted the following values:", {
-        description: JSON.stringify(data, null, 2),
-        action: {
-            label: "cerrar",
-            onClick: () => console.log("Undo"),
-        },
-    })
-  }
+  
+
   
   return (
     <section>
-      {sellRequests &&  <RequestList data={sellRequests} titleSection="Peticiones de cambios" />}
+      {sellRequests &&  
+        <RequestList
+          onSubmit={onSubmit}
+          data={sellRequests} 
+          titleSection="Peticiones de cambios" />}
 
       <Separator className="my-4" />
 

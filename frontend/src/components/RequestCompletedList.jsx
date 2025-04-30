@@ -99,32 +99,23 @@ function RequestDialogue({pair, onSubmit, tradeRequestId}) {
 
 }
 
-function RequestItem({data, onSubmit}) {
+function RequestItem({data}) {
     const {getFiatPair} = useTradeRequest()
     const pair = getFiatPair(data.pair)
-
- 
-
-    const actionSide = pair.side === "S" ? "exchange_sell" : "exchange_buy";
-    const fiatCode =  pair.side === "S" ? pair.currencyTo : pair.currencyFrom;
   return (
     <li>
         <Card>
         <CardHeader>
             <CardTitle>Cambio de {pair.currencyFrom} a {pair.currencyTo}</CardTitle>
-            <CardDescription>Cliente desea transferir <b className="text-slate-800">{parseFloat(data.requested_amount)} {pair.currencyFrom} </b></CardDescription>
         </CardHeader>
         <CardContent>
-            <p className="mb-1 text-sm text-black/60">Creado el {timeFormat(data.created)}</p>
+            <p>{data.exchange_buy.amount}</p>
+            <p>{data.exchange_buy.price}</p>
+            <p className="mb-1 text-sm text-black/60">{timeFormat(data.exchange_buy.created)}</p>
             <Badge>{data.status_text}</Badge>
         </CardContent>
         <CardFooter>
-            {data[actionSide] ?
-            (
-              <RequestResolved exchange={data[actionSide]} side={pair.side} fiatCode={fiatCode} />
-            ) : (
-            <RequestDialogue pair={pair} onSubmit={onSubmit} tradeRequestId={data.id} />
-            )}
+            formato
         </CardFooter>
         </Card>
 
@@ -133,16 +124,12 @@ function RequestItem({data, onSubmit}) {
 }
 
 
-export default function RequestList({data, titleSection, onSubmit}) {
+export default function RequestCompletedList({data}) {
   return (
     <ul className="space-y-4">
-      <TitleSection 
-        title={titleSection}
-        subtitle="los clientes aguardan por que resolvamos las siguientes operaciones"  
-      />
 
         {data.map((item) => (
-            <RequestItem key={item.id} data={item} onSubmit={onSubmit} />
+            <RequestItem key={item.id} data={item} />
         ))}
     </ul>
   )

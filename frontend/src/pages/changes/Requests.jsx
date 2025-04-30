@@ -27,7 +27,6 @@ export default function Requests() {
     if (resp.status === 201) {
       displaySuccess();
       insertNewTradeRequest(resp.data)
-      console.log(resp.data)
     }
   }
 

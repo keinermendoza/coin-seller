@@ -25,39 +25,43 @@ import {
 import { useChanges } from "@/contexts/ChangeContext"
 import { useTradeRequest } from "@/contexts/TradeRequestContext"
 import RequestList from "@/components/RequestList"
-
-const price = {
-  label: "Precio de comprar 1 USDT",
-  placeholder: "Ejemplo: 98700",
-  helpText: "Esto es para registrar el precio que usted pagó por cada USDT.",
-}
-
-const amount = {
-  label: "Cantidad de USDT comprados",
-  placeholder: "Ejemplo: 10",
-  helpText: "Esto es para registrar la cantidad de USDT usted compró",
-}
-
+import axios from "@/lib/axios"
 
 export default function Buy() {
   const [selectedPair, setSelectedPair] = useState(0)
   const {buyPairs} = useChanges()
-  const {buyRequests} = useTradeRequest()
+  const {buyRequests, updateTradeRequest} = useTradeRequest()
 
-  function onSubmit(data) {
-    toast(
-        "You submitted the following values:", {
-        description: JSON.stringify(data, null, 2),
-        action: {
-            label: "cerrar",
-            onClick: () => console.log("Undo"),
-        },
-    })
+  async function onSubmit(formData, trade_request_id, side_operation) {
+    const body = {
+      ...formData,
+      trade_request_id,
+      side_operation,
+    }
+
+    const resp = await axios.post("/api/trade-requests/register-exchange", body)
+    if (resp.status === 201) {
+      toast(
+          "You submitted the following values:", {
+          description: JSON.stringify(formData, null, 2),
+          action: {
+              label: "cerrar",
+              onClick: () => console.log("Undo"),
+          },
+      })
+      console.log(resp.data)
+      updateTradeRequest(trade_request_id, resp.data)
+    }
   }
 
   return (
     <section>
-      {buyRequests &&  <RequestList data={buyRequests} titleSection="Peticiones de cambios" />}
+      {buyRequests &&  
+      <RequestList 
+        data={buyRequests} 
+        titleSection="Peticiones de cambios"
+        onSubmit={onSubmit}
+      />}
       <Separator className="my-4" />
       
       {buyPairs[selectedPair] &&

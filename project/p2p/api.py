@@ -1,6 +1,10 @@
 from django.utils import timezone as tz
 from rest_framework.views import APIView
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import (
+    ListCreateAPIView,
+    CreateAPIView
+)
+
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework import serializers, status
@@ -10,14 +14,16 @@ from p2p.models import (
     FiatExchangePairRate,
     ImageCoordinates,
     UserFiatPreferences,
-    TradeRequest
+    TradeRequest,
+    Exchange
 )
 
 from .serializers import (
     CalculatorBuyRateSerializer,
     CalculatorSellRateSerializer,
     ImageCoordinatesSerializer,
-    TradeRequestSerializer
+    TradeRequestSerializer,
+    ExchangeCreateAssociateSerializer
 )
 
 class CalculatorRatesApiView(APIView):
@@ -72,9 +78,23 @@ class TradeRequestView(ListCreateAPIView):
             "results": response.data
         }
         return Response(data, status=status.HTTP_200_OK)        
-        
 
 
+
+class ExchangeAPIView(APIView):
+    """
+    creates an exchange operation and 
+    returns the corresponding TradeRquest instance updated
+    """
+    def post(self, request, *args, **kwargs):
+        exchange_serializer = ExchangeCreateAssociateSerializer(data=request.data)
+        exchange_serializer.is_valid(raise_exception=True)
+        exchange_serializer.save(registered_by=self.request.user)
+        trade = TradeRequest.objects.get(id=request.data.get('trade_request_id'))
+        trade_serializer = TradeRequestSerializer(trade)
+        print(trade_serializer.data)
+        return Response(trade_serializer.data, status=status.HTTP_201_CREATED)
+    
 class RatesAutoUpdateAction(APIView):
     def post(self, request, *args, **kwargs):
         fiat_pairs = FiatExchangePair.objects.all()
