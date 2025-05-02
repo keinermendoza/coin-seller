@@ -4,7 +4,7 @@ import { ArrowRightLeft, Bolt, Images } from "lucide-react"
 export default function NavigationMenu() {
   
   const navItems = [
-    { to: "/client/images", icon: <Images className="h-5 w-5" />, label: "Imagenes" },
+    // { to: "/client/images", icon: <Images className="h-5 w-5" />, label: "Imagenes" },
     { to: "/client/changes", icon: <ArrowRightLeft  className="h-5 w-5" />, label: "Cambios" },
     { to: "/client/configuration", icon: <Bolt className="h-5 w-5" />, label: "Configuraciones" },
   ]

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
-import { BaseLayout, LayoutChanges, LayoutConfiguration, LayoutImages } from "./layouts";
+import { BaseLayout, LayoutChanges, LayoutConfiguration } from "./layouts";
 import Edit from "@/pages/changes/Edit";
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
         </Route>
 
         <Route path="configuration" element={<LayoutConfiguration />} />
-        <Route path="images" element={<LayoutImages />} />
+        {/* <Route path="images" element={<LayoutImages />} /> */}
       </Route>
     </Routes>
   </BrowserRouter>
