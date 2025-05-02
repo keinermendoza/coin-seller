@@ -3,12 +3,16 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from './App.jsx'
 import './index.css'
-import { TradeRequestProvider } from './contexts/TradeRequestContext.jsx';
+import { TradeRequestProvider } from '@/contexts/TradeRequestContext.jsx';
+import { ChangesProvider } from "@/contexts/ChangeContext"
+
 const root = document.getElementById("root");
 ReactDOM.createRoot(root).render(
   <StrictMode>
     <TradeRequestProvider>
-      <App />
+      <ChangesProvider>
+        <App />
+      </ChangesProvider>
     </TradeRequestProvider>
   </StrictMode>
 

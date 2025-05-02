@@ -56,26 +56,7 @@ export default function Buy() {
 
   return (
     <section>
-      {buyRequests &&  
-      <RequestList 
-        data={buyRequests} 
-        titleSection="Peticiones de cambios"
-        onSubmit={onSubmit}
-      />}
-      <Separator className="my-4" />
-      
-      {buyPairs[selectedPair] &&
-        <Alert className="bg-red-100" variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Importante!!</AlertTitle>
-        <AlertDescription>
-          Comprar USDT por más de {buyPairs[selectedPair].rateInfo.buy_price_limit} produce perdidas 
-        </AlertDescription>
-      </Alert>}
-
-      <Separator className="my-4" />
-
-      <div className="text-slate-900 flex flex-col items-center justify-center text-center gap-4 my-4">
+       <div className="text-slate-900 flex flex-col items-center justify-center text-center gap-4 my-4">
         <p className="text-xl font-medium">Calculadora de Cambios</p>
         {buyPairs.length > 0 ? (
         <Select onValueChange={(value) => setSelectedPair(value)} defaultValue={selectedPair}>
@@ -94,14 +75,28 @@ export default function Buy() {
           </div>
         )  
       }
-        
-
+      {buyPairs[selectedPair] && <Calculator data={buyPairs[selectedPair]} />}
       </div>
+
+      <Separator className="my-4" />
+      
+      {buyPairs[selectedPair] &&
+        <Alert className="bg-red-100" variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Importante!!</AlertTitle>
+        <AlertDescription>
+          Comprar USDT por más de {buyPairs[selectedPair].rateInfo.buy_price_limit} produce perdidas 
+        </AlertDescription>
+      </Alert>}
+
       <Separator className="my-4" />
 
-      {buyPairs[selectedPair] && <Calculator data={buyPairs[selectedPair]} />}
-
-
+      {buyRequests &&  
+      <RequestList 
+        data={buyRequests} 
+        titleSection="Peticiones de cambios"
+        onSubmit={onSubmit}
+      />}
 
     </section>
   )

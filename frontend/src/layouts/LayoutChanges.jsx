@@ -1,9 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Sell, Buy, Requests, History } from "@/pages/changes"
-import { ChangesProvider } from "@/contexts/ChangeContext"
+import { Sell, Buy, Requests } from "@/pages/changes"
 export default function LayoutChanges() {
   return (
-    <ChangesProvider>
+    <section>
       <h1 className="text-3xl font-medium mb-4">Cambios</h1>
 
       <Tabs defaultValue="sell" >
@@ -11,8 +10,6 @@ export default function LayoutChanges() {
             <TabsTrigger value="sell">Vender</TabsTrigger>
             <TabsTrigger value="buy">Comprar</TabsTrigger>
             <TabsTrigger value="requests">Nuevos</TabsTrigger>
-            <TabsTrigger value="history">Historial</TabsTrigger>
-
 
         </TabsList>
         <TabsContent value="sell">
@@ -24,11 +21,9 @@ export default function LayoutChanges() {
         <TabsContent value="requests">
             <Requests />
         </TabsContent>
-        <TabsContent value="history">
-            <History />
-        </TabsContent>
+        
       </Tabs>
-    </ChangesProvider>
+      </section>
         
   )
 }

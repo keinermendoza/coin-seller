@@ -11,6 +11,7 @@ def pre_save_post(sender, instance, update_fields, *args, **kwargs):
         conected_transactions = [instance.exchange_buy, instance.exchange_sell]
         if None not in (conected_transactions):
             instance.status = TradeRequest.TradeStatus.COMPLETED
+            instance._calculate_and_set_result()
         elif any(conected_transactions):
             instance.status = TradeRequest.TradeStatus.ONE_SIDE_READY
         elif not any(conected_transactions):

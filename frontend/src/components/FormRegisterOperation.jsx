@@ -31,12 +31,12 @@ const FormSchema = z.object({
       .transform((val) => Number(val)),
   });
 
-export function FormRegisterOperation({price, amount, onSubmit, extraParamsSubmit}) {
+export function FormRegisterOperation({price, amount, onSubmit, extraParamsSubmit=null}) {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-        price: '',
-        amount: '',
+        price: price?.value || '',
+        amount: amount?.value || '',
       },
   })
 
@@ -46,7 +46,7 @@ export function FormRegisterOperation({price, amount, onSubmit, extraParamsSubmi
     <div className="w-full max-w-5xl mx-auto bg-gray-300 rounded-xl p-4 ">
 
         <Form {...form}>
-        <form onSubmit={form.handleSubmit((data) => onSubmit(data, extraParamsSubmit.trade_request_id, extraParamsSubmit.side_operation))} className="space-y-6">
+        <form onSubmit={form.handleSubmit((data) => onSubmit(data, extraParamsSubmit?.trade_request_id, extraParamsSubmit?.side_operation))} className="space-y-6">
             <FormField
             control={form.control}
             name="price"
@@ -54,7 +54,7 @@ export function FormRegisterOperation({price, amount, onSubmit, extraParamsSubmi
                 <FormItem>
                 <FormLabel>{price.label}</FormLabel>
                 <FormControl>
-                    <Input className="bg-white" placeholder={price.placeholder} {...field} />
+                    <Input  type="number" className="bg-white" placeholder={price.placeholder} {...field} />
                 </FormControl>
                 <FormDescription className="text-[0.75rem] italic">
                     {price.helpText}
@@ -70,7 +70,7 @@ export function FormRegisterOperation({price, amount, onSubmit, extraParamsSubmi
                 <FormItem>
                 <FormLabel>{amount.label}</FormLabel>
                 <FormControl>
-                    <Input className="bg-white" placeholder={amount.placeholder} {...field} />
+                    <Input  type="number" className="bg-white" placeholder={amount.placeholder} {...field} />
                 </FormControl>
                 <FormDescription className="text-[0.75rem] italic">
                     {amount.helpText}

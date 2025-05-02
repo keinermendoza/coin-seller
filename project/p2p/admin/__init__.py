@@ -9,5 +9,5 @@ from .fiat_exchange_dummy_pair_rate import FiatExchangeDummyPairRateAdmin
 from .switch_model_admin import SwitchModelAdmin
 from .image_coordinates import ImageCoordinatesAdmin
 
-from . import trade_request
+from .trade_request import TradeRequestAdmin, ExchangeAdmin 
 from . import user_fiat_preferences

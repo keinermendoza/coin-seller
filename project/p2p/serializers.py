@@ -11,7 +11,7 @@ from p2p.models import (
 
 class ExchangeSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ["amount", "price", "registered_by", "created"]  
+        fields = ["id", "amount", "price", "registered_by", "created"]  
         model = Exchange   
 
 class TradeRequestSerializer(serializers.ModelSerializer):

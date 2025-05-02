@@ -28,6 +28,4 @@ class Exchange(TimeStampedModel):
     )
 
     def __str__(self):
-        user = self.registered_by.username if self.registered_by else "Unknown"
-        side = self.get_side_operation_display()
-        return f"{side} {self.amount} at {self.price} by {user}"
+        return f"Exchange registered by {self.registered_by}"

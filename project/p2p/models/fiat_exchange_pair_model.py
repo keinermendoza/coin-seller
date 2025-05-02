@@ -192,7 +192,7 @@ class FiatExchangePair(TimeStampedModel):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.currency_from.code}/{self.currency_to.code}"
+        return f"{self.currency_from.code} to {self.currency_to.code}"
 
     class Meta:
         constraints = [

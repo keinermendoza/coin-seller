@@ -31,9 +31,8 @@ export const TradeRequestProvider = ({ children }) => {
     setHistoryRequests(history)
     setPresentRequests(present)
 
-    diferentiateRequestBySide()    
-
   }
+
 
   const diferentiateRequestBySide = () => {
     const { buyIds, sellIds } = fiatSuscriptions.reduce(
@@ -68,10 +67,13 @@ export const TradeRequestProvider = ({ children }) => {
   }
 
   useEffect(() => {
+    diferentiateRequestBySide()    
+  }, [presentRequests])
+
+  useEffect(() => {
     if(data) {
       setFiatSuscriptions(data.fiat_suscriptions)
       setTradeRequests(data.results)
-      diferentiateRequestByStatus()
     }
   }, [data])
 
@@ -100,7 +102,7 @@ export const TradeRequestProvider = ({ children }) => {
   }
 
   return (
-    <TradeRequestContext.Provider value={{ historyRequests, insertNewTradeRequest, updateTradeRequest, buyRequests, sellRequests, fiatSuscriptions, getFiatPair}}>
+    <TradeRequestContext.Provider value={{ refetchTradeRequests, historyRequests, insertNewTradeRequest, updateTradeRequest, buyRequests, sellRequests, fiatSuscriptions, getFiatPair}}>
       {children}
     </TradeRequestContext.Provider>
   );

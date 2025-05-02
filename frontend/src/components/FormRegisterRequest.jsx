@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
+import { Textarea } from "@/components/ui/textarea"
 
 
 import {
@@ -48,6 +49,7 @@ export function FormRegisterRequest({pairs, onSubmit}) {
     defaultValues: {
         pair: pairs[0].id,
         requested_amount: '',
+        messsage: '',
       },
   })
 
@@ -106,6 +108,22 @@ export function FormRegisterRequest({pairs, onSubmit}) {
                 </FormControl>
                 <FormDescription className="text-start text-[0.75rem] italic">
                     Valor que el cliente transferirá a nuestras cuentas
+                </FormDescription>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+             <FormField
+            control={form.control}
+            name="message"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel htmlFor="message">Datos del destinatario</FormLabel>
+                <FormControl>
+                    <Textarea id="message" className="bg-white"  {...field} placeholder="Ejemplo: Recibe Pepe Babilonia, CI 998877665 Numero de cuenta: 123456789 Banco Banesco ... Envia juan mesopotamia CI 112233456"/>
+                </FormControl>
+                <FormDescription className="text-start text-[0.75rem] italic">
+                    Datos de la persona que recibira la transferencia, puedes incluir tambien informacion de la persona que envia esta operacion
                 </FormDescription>
                 <FormMessage />
                 </FormItem>

@@ -1,3 +1,4 @@
+from decimal import Decimal, ROUND_HALF_UP
 from django.db import models
 from p2p.models import (
     FiatExchangePair,
@@ -100,13 +101,40 @@ class TradeRequest(TimeStampedModel):
         blank=True,
     )
 
+    client_offered_rate = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
+
     rate = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
-    result = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
+    result = models.DecimalField(help_text="amount expressed in destination currency, for example: for VES to BRL result is expressed in BRL", max_digits=8, decimal_places=3, blank=True, null=True)
     status = models.PositiveIntegerField(
         choices=TradeStatus.choices, default=TradeStatus.OPEN
     )
+    message = models.TextField(null=True)
 
     objects = TradeRequestManager()
 
     def __str__(self):
         return f"TradeRequest: {self.rate} → {self.result} for pair {self.pair}"
+    
+    def _calculate_and_set_rate(self):
+        """
+        you must to check that instance status is COMPLETED before to call this method  
+        modifies the value in place only in memory 
+        """
+        real_rate = Decimal(
+            self.exchange_sell.price / self.exchange_buy.price).quantize(
+                Decimal('0.001'), rounding=ROUND_HALF_UP
+            )
+        self.rate = real_rate
+        return real_rate
+        
+
+    def _calculate_and_set_result(self):
+        """
+        you must to check that instance status is COMPLETED before to call this method  
+        modifies the value in place only in memory 
+        """
+        self.client_offered_rate = self.pair.last_rate.rate # egress rate
+        rate_for_us = self._calculate_and_set_rate()  # ingres rate
+        rate_diff_percentage = rate_for_us - self.client_offered_rate
+        self.result = self.requested_amount * rate_diff_percentage  
+

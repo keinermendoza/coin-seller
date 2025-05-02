@@ -1,3 +1,5 @@
+import { Link } from "react-router"
+
 import {
     Card,
     CardContent,
@@ -17,23 +19,12 @@ import {
   } from "@/components/ui/dialog"
   
   import { Badge } from "@/components/ui/badge"
-  import { Button } from "@/components/ui/button"
+  import { Button, buttonVariants } from "@/components/ui/button"
 import { FormRegisterOperation } from "./FormRegisterOperation"
 import timeFormat from "@/lib/timeFormat"
   import { useTradeRequest } from "@/contexts/TradeRequestContext"
   import TitleSection from "@/components/TitleSection"
 
-// "id": 7,
-// "created": "2025-04-27T22:20:16.082596-04:00",
-// "edited": "2025-04-27T22:20:16.082635-04:00",
-// "requested_amount": "10.000",
-// "rate": null,
-// "result": null,
-// "status": 1,
-// "created_by": 1,
-// "pair": 2,
-// "exchange_buy": null,
-// "exchange_sell": null
 const neomorphisem = {
     "boxShadow": "inset -5px -5px 9px rgba(255,255,255,0.45), inset 5px 5px 9px rgba(94,104,121,0.3)"
   }
@@ -46,13 +37,18 @@ function RequestResolved({exchange, side, fiatCode}) {
         <p>{sideWordAcusativePast} {parseFloat(exchange.amount)} USDT a {parseFloat(exchange.price)} {fiatCode} </p>
       </div>
       <p className="text-sm">Operación registrada el {timeFormat(exchange.created)}</p>
+      <div className="mt-2 flex justify-end items-center">
+        <Link className={buttonVariants({variant:  "destructive", size: "sm" })} 
+        to={"./" + exchange.id}
+        >Editar</Link>
+      </div>
     </div>
   )
 }
 
 
 function RequestDialogue({pair, onSubmit, tradeRequestId}) {
-    const sideWord =  pair.side === "S" ? "venta" : "compra";
+    const sideWord =  pair.side === "S" ? "VENTA" : "COMPRA";
     const sideWordPast =  pair.side === "S" ? "vendió" : "compró";
     const sideWordVerb =  pair.side === "S" ? "vender" : "comprar";
     const sideWordPastPerfect =  pair.side === "S" ? "vendidos" : "comprados";
@@ -79,7 +75,7 @@ function RequestDialogue({pair, onSubmit, tradeRequestId}) {
         </Button>
         <DialogContent>
             <DialogHeader>
-            <DialogTitle className="mb-2">Usa este formulario para registrar tu {sideWord}</DialogTitle>
+            <DialogTitle className="mb-2"><span className="font-normal">Usa este formulario para registrar tu</span> {sideWord}</DialogTitle>
             <DialogDescription asChild>
                 <div>
                     <FormRegisterOperation onSubmit={onSubmit} 
@@ -115,6 +111,11 @@ function RequestItem({data, onSubmit}) {
             <CardDescription>Cliente desea transferir <b className="text-slate-800">{parseFloat(data.requested_amount)} {pair.currencyFrom} </b></CardDescription>
         </CardHeader>
         <CardContent>
+            {data.message && <>
+            <p className="text-lg">Inforamcion del destinatario</p>
+            <p className="mb-4">{data.message}</p>
+            </>}
+
             <p className="mb-1 text-sm text-black/60">Creado el {timeFormat(data.created)}</p>
             <Badge>{data.status_text}</Badge>
         </CardContent>

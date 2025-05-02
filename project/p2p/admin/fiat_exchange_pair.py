@@ -7,6 +7,7 @@ from decimal import Decimal, ROUND_HALF_UP
 
 from p2p.models import (
     FiatExchangePair,
+    FiatExchangePairRate
 )
 
 
@@ -15,6 +16,7 @@ class FiatExchangePairAdmin(admin.ModelAdmin):
     list_display = [
         "id",
         "par",
+        "nueva_tasa",
         "rate_is_inside_min_border",
         "rate_is_inside_max_border",
         "publicado",
@@ -25,7 +27,21 @@ class FiatExchangePairAdmin(admin.ModelAdmin):
         "hora_mercado",
     ]
 
-    actions = ["actualizar_tipo_de_cambio", "exportar_a_csv"]
+    actions = [
+        "actualizar_tipo_de_cambio",
+        "exportar_a_csv",
+        "mostrar_tipo_de_cambio_sugerido",
+    ]
+
+    def nueva_tasa(self, obj):
+        if id := obj.last_rate.id:
+            app_label = FiatExchangePairRate._meta.app_label
+            model_name = FiatExchangePairRate._meta.model_name
+            change_url = reverse(f"admin:{app_label}_{model_name}_change", args=[id])
+
+            return format_html(
+                f'<a href="{change_url}">Editar ultima taza</a>'
+            )
 
     def par(self, obj):
         return f"{obj.currency_from.code}/{obj.currency_to.code}"
@@ -68,7 +84,12 @@ class FiatExchangePairAdmin(admin.ModelAdmin):
         modeladmin.message_user(
             request, f"nuevos tipos de cambios actualizado con exitos", messages.SUCCESS
         )
-
+    def mostrar_tipo_de_cambio_sugerido(modeladmin, request, queryset):
+        for fiat_pair in queryset:
+            rate = fiat_pair.get_market_rate_plus_optimum_margin()
+            modeladmin.message_user(
+                request, f"{fiat_pair} usar {rate}", messages.SUCCESS
+            )
     def exportar_a_csv(self, request, queryset):
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = (

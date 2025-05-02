@@ -2,7 +2,7 @@ from django.utils import timezone as tz
 from rest_framework.views import APIView
 from rest_framework.generics import (
     ListCreateAPIView,
-    CreateAPIView
+    RetrieveUpdateAPIView
 )
 
 from rest_framework.response import Response
@@ -23,7 +23,8 @@ from .serializers import (
     CalculatorSellRateSerializer,
     ImageCoordinatesSerializer,
     TradeRequestSerializer,
-    ExchangeCreateAssociateSerializer
+    ExchangeCreateAssociateSerializer,
+    ExchangeSerializer
 )
 
 class CalculatorRatesApiView(APIView):
@@ -52,7 +53,8 @@ class FiatPairBasicDicstSerializer(serializers.Serializer):
     currencyFrom = serializers.CharField(source='pair__currency_from__code')
     currencyTo = serializers.CharField(source='pair__currency_to__code')
     currencyFromSymbol = serializers.CharField(source='pair__currency_from__symbol')
-
+    currencyToSymbol = serializers.CharField(source="pair__currency_to__symbol")
+            
 
 class TradeRequestView(ListCreateAPIView):
     serializer_class = TradeRequestSerializer
@@ -71,6 +73,8 @@ class TradeRequestView(ListCreateAPIView):
             "pair__currency_from__code",
             "pair__currency_to__code",
             "pair__currency_from__symbol",
+            "pair__currency_to__symbol",
+
         )
         fiat_pair_serializer = FiatPairBasicDicstSerializer(fiat_pair_list, many=True)
         data = {
@@ -79,8 +83,13 @@ class TradeRequestView(ListCreateAPIView):
         }
         return Response(data, status=status.HTTP_200_OK)        
 
-
-
+class ExchangeUpdateAPIView(RetrieveUpdateAPIView):
+    """
+    Updates exchange operation for mistaken registry
+    """
+    serializer_class = ExchangeSerializer
+    queryset = Exchange.objects.all()
+    
 class ExchangeAPIView(APIView):
     """
     creates an exchange operation and 

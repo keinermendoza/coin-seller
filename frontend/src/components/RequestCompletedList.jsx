@@ -15,6 +15,13 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog"
+
+  import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+  } from "@/components/ui/accordion"
   
   import { Badge } from "@/components/ui/badge"
   import { Button } from "@/components/ui/button"
@@ -99,25 +106,98 @@ function RequestDialogue({pair, onSubmit, tradeRequestId}) {
 
 }
 
+
+// esults": [
+  // at_suscriptions": [
+  //   {
+  //       "id": 1,
+  //       "side": "S",
+  //       "currencyFrom": "VES",
+  //       "currencyTo": "BRL",
+  //       "currencyFromSymbol": "Bs"
+  //   },
+
+
+//   {
+//       "id": 1,
+//       "status_text": "Dinero entregado al destinatario",
+//       "exchange_buy": {
+//           "id": 1,
+//           "amount": "20.010",
+//           "price": "5.980",
+//           "registered_by": 1,
+//           "created": "2025-05-01T22:06:38.907641-04:00"
+//       },
+//       "exchange_sell": {
+//           "id": 2,
+//           "amount": "18.500",
+//           "price": "109.700",
+//           "registered_by": 2,
+//           "created": "2025-05-01T22:09:37.162068-04:00"
+//       },
+//       "created": "2025-05-01T21:56:37.172379-04:00",
+//       "edited": "2025-05-01T22:09:37.208491-04:00",
+//       "requested_amount": "120.000",
+//       "rate": "18.344",
+//       "result": "-205.680",
+//       "status": 3,
+//       "message": "recibe: Juan Carlos CI 29450134 Mercantil 041454637865.Envia Pedro Castillo CI 14566791",
+//       "created_by": 1,
+//       "pair": 2
+//   },
+
+function statusColor (value) {
+  const extraClass = ' font-semibold';
+  return value > 0 ? 'text-green-800' + extraClass :  'text-red-600' + extraClass
+}
+
 function RequestItem({data}) {
     const {getFiatPair} = useTradeRequest()
     const pair = getFiatPair(data.pair)
-  return (
+    const bennefitMargin = parseFloat(data.rate - data.client_offered_rate).toFixed(2);
+    return (
     <li>
         <Card>
         <CardHeader>
-            <CardTitle>Cambio de {pair.currencyFrom} a {pair.currencyTo}</CardTitle>
+          <CardTitle>Cambio de {pair.currencyFrom} a {pair.currencyTo}</CardTitle>
+          <CardDescription>Enviados {pair.currencyFromSymbol} {data.requested_amount}</CardDescription>
         </CardHeader>
         <CardContent>
-            <p>{data.exchange_buy.amount}</p>
-            <p>{data.exchange_buy.price}</p>
-            <p className="mb-1 text-sm text-black/60">{timeFormat(data.exchange_buy.created)}</p>
+          <div className="mb-2">
+            <p>Tasa pagada al cliente {data.client_offered_rate} {pair.currencyToSymbol}/{pair.currencyFromSymbol}</p>
+            <p>Tasa cobrada en binance {data.rate} {pair.currencyToSymbol}/{pair.currencyFromSymbol}</p>
+            <p>
+              Con un margen de 
+              <span className={statusColor(bennefitMargin)}> {bennefitMargin} {pair.currencyToSymbol}/{pair.currencyFromSymbol} </span>
+              tuvimos una ganancia estimada de 
+              <span className={statusColor(data.result)}> {pair.currencyToSymbol} {data.result} </span>
+            </p>
+          </div>
+
+            <p className="mb-1 text-sm text-black/60">{timeFormat(data.edited)}</p>
             <Badge>{data.status_text}</Badge>
         </CardContent>
         <CardFooter>
-            formato
+          <Accordion className="w-full" type="multiple" >
+
+            <AccordionItem  value="buyer">
+              <AccordionTrigger className="cursor-pointer" >Información de {pair.currencyFrom} a USDT</AccordionTrigger>
+              <AccordionContent>
+                Yes. It adheres to the WAI-ARIA design pattern.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem   value="seller">
+              <AccordionTrigger  className="cursor-pointer">Información de USDT a {pair.currencyTo}</AccordionTrigger>
+              <AccordionContent>
+                Yes. It adheres to the WAI-ARIA design pattern.
+              </AccordionContent>
+            </AccordionItem>
+          
+          </Accordion>
+
         </CardFooter>
-        </Card>
+      </Card>
 
     </li>
   )
