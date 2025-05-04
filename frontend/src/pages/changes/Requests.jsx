@@ -1,9 +1,3 @@
-import { useChanges } from "@/contexts/ChangeContext"
-import timeFormat from "@/lib/timeFormat"
-import { Button } from "@/components/ui/button"
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
-import { Info } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
 import axios from "@/lib/axios";
 import { FormRegisterRequest } from "@/components/FormRegisterRequest"
 import { toast } from "sonner"
@@ -32,7 +26,11 @@ export default function Requests() {
 
   return (
     <section className="text-slate-900 text-center mt-4 space-y-4">
-      <FormRegisterRequest onSubmit={onSubmit} pairs={fiatSuscriptions} />
+      {fiatSuscriptions?.length > 0 ? (
+        <FormRegisterRequest onSubmit={onSubmit} pairs={fiatSuscriptions} />
+      ) : (
+        <p className="text-4xl">Cargando...</p>
+      )}
     </section>
   )
 }

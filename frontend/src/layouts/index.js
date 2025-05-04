@@ -1,6 +1,4 @@
 import BaseLayout from "./BaseLayout";
-import LayoutChanges from "./LayoutChanges";
-import LayoutConfiguration from "./LayoutConfiguration";
-import LayoutImages from "./LayoutImages";
+import TopButtonNavigationLayout from "./TopButtonNavigationLayout";
 
-export {BaseLayout, LayoutChanges, LayoutConfiguration, LayoutImages}
+export {BaseLayout, TopButtonNavigationLayout}

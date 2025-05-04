@@ -54,17 +54,22 @@ export default function Buy() {
     }
   }
 
+  if (!buyPairs) {
+    return (<p className="text-4xl">Cargando...</p>)
+  }
+  
+
   return (
     <section>
        <div className="text-slate-900 flex flex-col items-center justify-center text-center gap-4 my-4">
         <p className="text-xl font-medium">Calculadora de Cambios</p>
-        {buyPairs.length > 0 ? (
+        {buyPairs?.length > 0 ? (
         <Select onValueChange={(value) => setSelectedPair(value)} defaultValue={selectedPair}>
           <SelectTrigger>
             <SelectValue placeholder="Seleccionar cambio" />
           </SelectTrigger>
           <SelectContent>
-            {buyPairs.map((pair, index) => (
+            {buyPairs?.map((pair, index) => (
               <SelectItem key={index} value={index}>{pair.currencyFrom.code} a {pair.currencyTo.code}</SelectItem>
             ))}
           </SelectContent>

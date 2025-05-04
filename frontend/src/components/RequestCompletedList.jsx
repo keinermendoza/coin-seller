@@ -154,7 +154,7 @@ function statusColor (value) {
 function RequestItem({data}) {
     const {getFiatPair} = useTradeRequest()
     const pair = getFiatPair(data.pair)
-    const bennefitMargin = parseFloat(data.rate - data.client_offered_rate).toFixed(2);
+    const bennefitMargin = parseFloat(data.rate - data.client_offered_rate).toFixed(3);
     return (
     <li>
         <Card>

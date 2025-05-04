@@ -56,8 +56,9 @@ export default function Sell() {
   }
   
 
-  
-
+  if (!sellPairs) {
+    return (<p className="text-4xl">Cargando...</p>)
+  }
   
   return (
     <section>
