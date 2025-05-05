@@ -9,3 +9,4 @@ class ExchangeAdmin(admin.ModelAdmin):
 @admin.register(TradeRequest)
 class TradeRequestAdmin(admin.ModelAdmin):
     list_display = ["pair", "created", "status", "rate", "client_offered_rate", "result", "edited"]
+

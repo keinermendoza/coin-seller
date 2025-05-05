@@ -22,7 +22,14 @@ import {
     AccordionItem,
     AccordionTrigger,
   } from "@/components/ui/accordion"
+
+  import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+  } from "@/components/ui/popover"
   
+  import { Ellipsis } from "lucide-react"
   import { Badge } from "@/components/ui/badge"
   import { Button } from "@/components/ui/button"
 import { FormRegisterOperation } from "./FormRegisterOperation"
@@ -159,7 +166,20 @@ function RequestItem({data}) {
     <li>
         <Card>
         <CardHeader>
-          <CardTitle>Cambio de {pair.currencyFrom} a {pair.currencyTo}</CardTitle>
+          <CardTitle>
+            <div className="flex justify-between gap-4 items-center mb-2">
+              <p>
+                 Cambio de {pair.currencyFrom} a {pair.currencyTo}  
+              </p>
+            <Popover>
+              <PopoverTrigger className="border-1 border-solid border-black/30 rounded-md px-2 py-1.5 transition-colors duration-200 hover:bg-gray-200">
+                <Ellipsis />
+              </PopoverTrigger>
+              <PopoverContent><a href={`/controller/p2p/traderequest/${data.id}/change/`} target="_blank">Editar en panel avanzado</a></PopoverContent>
+            </Popover>
+            </div>
+            
+            </CardTitle>
           <CardDescription>Enviados {pair.currencyFromSymbol} {data.requested_amount}</CardDescription>
         </CardHeader>
         <CardContent>
