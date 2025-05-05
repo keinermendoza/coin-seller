@@ -14,7 +14,7 @@ class Exchange(TimeStampedModel):
         User, related_name="exchanges", on_delete=models.SET_NULL, null=True, blank=True
     )
     amount = models.DecimalField(
-        help_text="amount of currency traded", max_digits=8, decimal_places=3
+        help_text="amount of currency traded", max_digits=13, decimal_places=3
     )
     price = models.DecimalField(
         help_text="price expresed in the axe asset",

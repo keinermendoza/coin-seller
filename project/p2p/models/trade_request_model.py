@@ -79,7 +79,7 @@ class TradeRequest(TimeStampedModel):
         on_delete=models.SET_NULL,
         null=True,
     )
-    requested_amount = models.DecimalField(max_digits=8, decimal_places=3)
+    requested_amount = models.DecimalField(max_digits=13, decimal_places=3)
 
     pair = models.ForeignKey(
         FiatExchangePair, related_name="trades", on_delete=models.PROTECT
