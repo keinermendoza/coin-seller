@@ -10,10 +10,14 @@ from p2p.models import (
 )
 
 class ExchangeSerializer(serializers.ModelSerializer):
+    registeredBy = serializers.SerializerMethodField()
     class Meta:
-        fields = ["id", "amount", "price", "registered_by", "created"]  
-        model = Exchange   
+        fields = ["id", "amount", "price", "registeredBy", "created"]  
+        model = Exchange  
 
+    def get_registeredBy(self, obj):
+        return obj.registered_by.username
+    
 class TradeRequestSerializer(serializers.ModelSerializer):
     status_text = serializers.SerializerMethodField()
     exchange_buy = ExchangeSerializer(read_only=True)

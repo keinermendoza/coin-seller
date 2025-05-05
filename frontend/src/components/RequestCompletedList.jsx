@@ -125,14 +125,14 @@ function RequestDialogue({pair, onSubmit, tradeRequestId}) {
 //           "id": 1,
 //           "amount": "20.010",
 //           "price": "5.980",
-//           "registered_by": 1,
+//           "registeredBy": username a,
 //           "created": "2025-05-01T22:06:38.907641-04:00"
 //       },
 //       "exchange_sell": {
 //           "id": 2,
 //           "amount": "18.500",
 //           "price": "109.700",
-//           "registered_by": 2,
+//           "registered_by": username b,
 //           "created": "2025-05-01T22:09:37.162068-04:00"
 //       },
 //       "created": "2025-05-01T21:56:37.172379-04:00",
@@ -179,18 +179,30 @@ function RequestItem({data}) {
         </CardContent>
         <CardFooter>
           <Accordion className="w-full" type="multiple" >
+            <AccordionItem  value="general">
+              <AccordionTrigger className="cursor-pointer" >Mensaje de la transacción</AccordionTrigger>
+              <AccordionContent>
+                {data.message}
+              </AccordionContent>
+            </AccordionItem>
 
             <AccordionItem  value="buyer">
               <AccordionTrigger className="cursor-pointer" >Información de {pair.currencyFrom} a USDT</AccordionTrigger>
               <AccordionContent>
-                Yes. It adheres to the WAI-ARIA design pattern.
+                <p className="mb-2">
+                <strong>{data.exchange_buy.registeredBy}</strong> registró la compra de {parseFloat(data.exchange_buy.amount)} USDT a {parseFloat(data.exchange_buy.price)} {pair.currencyFromSymbol} 
+                </p>
+                <p className="italic text-sm text-black/60">Registrado el {timeFormat(data.exchange_buy.created)}</p>
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem   value="seller">
               <AccordionTrigger  className="cursor-pointer">Información de USDT a {pair.currencyTo}</AccordionTrigger>
               <AccordionContent>
-                Yes. It adheres to the WAI-ARIA design pattern.
+              <p className="mb-2">
+                <strong>{data.exchange_sell.registeredBy}</strong> registró la venta de {parseFloat(data.exchange_sell.amount)} USDT a {parseFloat(data.exchange_sell.price)} {pair.currencyToSymbol}
+                </p>
+                <p className="italic text-sm text-black/60">Registrado el {timeFormat(data.exchange_sell.created)}</p>
               </AccordionContent>
             </AccordionItem>
           

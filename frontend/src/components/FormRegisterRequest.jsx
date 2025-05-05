@@ -103,7 +103,7 @@ export function FormRegisterRequest({pairs, onSubmit}) {
                         <span className="px-3 py-2 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md text-sm">
                             {selectedPair && selectedPair.currencyFromSymbol}
                         </span>
-                        <Input id="amount" className="bg-white rounded-l-none "  {...field} />
+                        <Input type="number" id="amount" className="bg-white rounded-l-none "  {...field} />
                     </label>
                 </FormControl>
                 <FormDescription className="text-start text-[0.75rem] italic">
