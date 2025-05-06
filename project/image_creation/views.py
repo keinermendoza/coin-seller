@@ -15,7 +15,7 @@ class ImageBannerView(RequireSuperUser, View):
 
         image = DrawImage(
             ves_brl= f"{ves_brl_rate:.2f}",
-            brl_ves=f"{brl_ves_rate:.2f}",
+            brl_ves=f"{brl_ves_rate:.3f}",
             date=DrawImage.get_date()
         )
 
