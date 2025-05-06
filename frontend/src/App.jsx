@@ -1,12 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import { BaseLayout, TopButtonNavigationLayout} from "./layouts";
 import {  Profile, SwitchAlarms } from "@/pages/configuration";
+import DownloadImages from "./pages/images/DownloadImages";
 import { History, Sell, Buy, Requests, Edit } from "@/pages/changes"
-import { ArrowRightLeft, Bolt } from "lucide-react"
+import { ArrowRightLeft, Bolt, Download } from "lucide-react"
 
 const BaseNavItems = [
+  { to: "/client/images", icon: <Download className="h-5 w-5" />, label: "Imagenes" },
   { to: "/client/cambios", icon: <ArrowRightLeft  className="h-5 w-5" />, label: "Cambios" },
   { to: "/client/general", icon: <Bolt className="h-5 w-5" />, label: "General" },
+
 ]
 
 const changesNavItems =  [
@@ -44,6 +47,8 @@ function App() {
           <Route path="perfil" element={<Profile />} /> 
           <Route path="acciones" element={<SwitchAlarms />} /> 
         </Route>
+
+        <Route path="images" element={<DownloadImages />} />
 
       </Route>
     </Routes>

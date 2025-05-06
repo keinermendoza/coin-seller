@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django_vite",
     "allauth",
     "allauth.account",
+    "image_creation",
 ]
 
 MIDDLEWARE = [

@@ -180,7 +180,7 @@ function RequestItem({data}) {
             </div>
             
             </CardTitle>
-          <CardDescription>Enviados {pair.currencyFromSymbol} {data.requested_amount}</CardDescription>
+          <CardDescription>Enviados {pair.currencyFromSymbol} {parseFloat(data.requested_amount)}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="mb-2">
