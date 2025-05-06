@@ -14,8 +14,8 @@ class ImageBannerView(RequireSuperUser, View):
         brl_ves_rate = brl_ves.last_rate.rate
 
         image = DrawImage(
-            ves_brl= f"{ves_brl_rate:.2f}",
-            brl_ves=f"{brl_ves_rate:.3f}",
+            ves_brl= f"{ves_brl_rate:.3f}",
+            brl_ves=f"{brl_ves_rate:.2f}",
             date=DrawImage.get_date()
         )
 
