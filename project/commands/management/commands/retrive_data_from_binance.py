@@ -25,24 +25,24 @@ class Command(BaseCommand):
                 )
 
                 data = p2p.extract_relevant_data(resp)
-                best_match = data[0]
+                second_best_match = data[1]
                 CurrencyExchangeConditions.objects.create(
                     currency=currency,
-                    price=best_match.get("price", ""),
-                    publisher_name=best_match.get("nickName", ""),
+                    price=second_best_match.get("price", ""),
+                    publisher_name=second_best_match.get("nickName", ""),
                     operation_type=CurrencyExchangeConditions.OperationType.BUY,
                     extra_data_listing={
-                        "payTimeLimit": best_match.get("payTimeLimit", ""),
-                        "minSingleTransAmount": best_match.get(
+                        "payTimeLimit": second_best_match.get("payTimeLimit", ""),
+                        "minSingleTransAmount": second_best_match.get(
                             "minSingleTransAmount", ""
                         ),
-                        "maxSingleTransAmount": best_match.get(
+                        "maxSingleTransAmount": second_best_match.get(
                             "maxSingleTransAmount", ""
                         ),
-                        "tradeMethods": best_match.get("tradeMethods", ""),
+                        "tradeMethods": second_best_match.get("tradeMethods", ""),
                     },
                     extra_data_publisher={
-                        "positiveRate": best_match.get("positiveRate", "")
+                        "positiveRate": second_best_match.get("positiveRate", "")
                     },
                 )
             else:
@@ -61,24 +61,24 @@ class Command(BaseCommand):
                 )
 
                 data = p2p.extract_relevant_data(resp)
-                best_match = data[0]
+                second_best_match = data[1]
                 CurrencyExchangeConditions.objects.create(
                     currency=currency,
-                    price=best_match.get("price", ""),
-                    publisher_name=best_match.get("nickName", ""),
+                    price=second_best_match.get("price", ""),
+                    publisher_name=second_best_match.get("nickName", ""),
                     operation_type=CurrencyExchangeConditions.OperationType.SELL,
                     extra_data_listing={
-                        "payTimeLimit": best_match.get("payTimeLimit", ""),
-                        "minSingleTransAmount": best_match.get(
+                        "payTimeLimit": second_best_match.get("payTimeLimit", ""),
+                        "minSingleTransAmount": second_best_match.get(
                             "minSingleTransAmount", ""
                         ),
-                        "maxSingleTransAmount": best_match.get(
+                        "maxSingleTransAmount": second_best_match.get(
                             "maxSingleTransAmount", ""
                         ),
-                        "tradeMethods": best_match.get("tradeMethods", ""),
+                        "tradeMethods": second_best_match.get("tradeMethods", ""),
                     },
                     extra_data_publisher={
-                        "positiveRate": best_match.get("positiveRate", "")
+                        "positiveRate": second_best_match.get("positiveRate", "")
                     },
                 )
             else:
