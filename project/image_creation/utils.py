@@ -10,7 +10,7 @@ class DrawImage:
         self.ves_brl = ves_brl
         self.brl_ves = brl_ves
         self.date = date
-        self.image = settings.BASE_DIR / "static/image_creation/img/banner-tasas.jpg"
+        self.image = settings.BASE_DIR / "static/image_creation/img/banner-tazas.jpg"
         
         self.rate_font = ImageFont.truetype(settings.BASE_DIR /  "static/image_creation/fonts/Montserrat-Medium.ttf", size=64)
         self.date_font = ImageFont.truetype(settings.BASE_DIR / "static/image_creation/fonts/Montserrat-Medium.ttf", size=48)
