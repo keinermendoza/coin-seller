@@ -44,7 +44,7 @@ BASIC_PAYLOAD = {
     "filterType": "all",
     "periods": [],
     "additionalKycVerifyFilter": 0,
-    "publisherType": "merchant",
+    # "publisherType": "merchant", # it's hidding the results
     "payTypes": [],
     "classifies": ["mass", "profession", "fiat_trade"],
 }

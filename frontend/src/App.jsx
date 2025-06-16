@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import { BaseLayout, TopButtonNavigationLayout} from "./layouts";
-import {  Profile, SwitchAlarms } from "@/pages/configuration";
+import {  Profile, SwitchAlarms, MarketWindow } from "@/pages/configuration";
 import DownloadImages from "./pages/images/DownloadImages";
 import { History, Sell, Buy, Requests, Edit } from "@/pages/changes"
 import { ArrowRightLeft, Bolt, Download } from "lucide-react"
@@ -22,6 +22,8 @@ const configurationNavItems = [
   { to: "historial", text: "Historial" },
   { to: "acciones", text: "Acciones" },
   { to: "perfil", text: "Perfil" },
+  { to: "tiempo-real/actualizar", text: "Actualizar" },
+
 ]
 
 function App() {
@@ -45,6 +47,7 @@ function App() {
           <Route index element={<Navigate to="historial" replace />} /> 
           <Route path="historial" element={<History />} />
           <Route path="perfil" element={<Profile />} /> 
+          <Route path="tiempo-real/actualizar" element={<MarketWindow />} /> 
           <Route path="acciones" element={<SwitchAlarms />} /> 
         </Route>
 

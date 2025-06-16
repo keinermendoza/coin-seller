@@ -189,6 +189,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "tasks.tasks.fetch_binance",
         "schedule": crontab(minute="*/10"),
     },
+    "remove_old_data": {
+        "task": "tasks.tasks.remove_old_data",
+        "schedule": crontab(day_of_week="*/1", hour=1, minute=0)
+    },
 }
 
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")

@@ -16,3 +16,11 @@ def fetch_binance():
         call_command("store_dummie_rates_for_exchange_pairs")
     if switch.email_alert_when_rates_are_out_of_range:
         call_command("email_alert_discontinuated_rates")
+
+
+@shared_task
+def remove_old_data():
+    switch = SwitchModel.objects.first()
+
+    if switch.destroy_old_currency_exchange_conditions:
+        call_command("remove_old_currency_exchange_conditions")

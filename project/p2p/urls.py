@@ -5,6 +5,12 @@ from . import api
 
 app_name = "p2p"
 urlpatterns = [
+    path("api/fiat-exchange-pairs", api.FiatExchangePairListAPIView.as_view(), name="fiat_exchange_pairs"),
+    path("api/refetch-currency-exchange-conditions", api.ReadMarketConditions.as_view(), name="fiat_exchange_pairs"),
+    
+    
+    path("api/fiat-exchange-pairs/<slug:slug>", api.FiatExchangePairMarketAPIView.as_view(), name="fiat_exchange_pair_market"),
+
     
     path("api/trade-requests", api.TradeRequestView.as_view(), name="trade_requests"),
     path("api/trade-requests/register-exchange", api.ExchangeAPIView.as_view(), name="register_exchange"),

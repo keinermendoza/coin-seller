@@ -12,11 +12,16 @@ User = get_user_model()
 
 class FiatExchangePairQuerySet(models.QuerySet):
     def user_suscribed(self, user: User, **kwargs):
+        """
+        returns pairs suscribed by a user
+        """
         if prefs_ids := user.fiat_preferences.filter(**kwargs).values_list(
             "pair", flat=True
         ):
             return self.filter(id__in=prefs_ids)
         return self.none()
+    
+    
 
    
 
@@ -69,7 +74,7 @@ class FiatExchangePair(TimeStampedModel):
     def optimum_margin(self):
         return self.optimum_margin_expected / 100
 
-    def get_last_currency_exchange_conditions_pair_buy_sell(
+    def _get_last_currency_exchange_conditions_pair_buy_sell(
         self,
     ) -> List["CurrencyExchangeConditions"]:
 
@@ -92,13 +97,42 @@ class FiatExchangePair(TimeStampedModel):
         return [from_currency, to_currency]
 
     def get_market_rate(self):
+        """
+        current market rate for the pair
+        represents the cost
+        """
         from_currency, to_currency = (
-            self.get_last_currency_exchange_conditions_pair_buy_sell()
+            self._get_last_currency_exchange_conditions_pair_buy_sell()
         )
 
         if from_currency and to_currency:
             rate = to_currency.price / from_currency.price
             return Decimal(rate).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
+
+    def get_market_rates(
+        self,
+        number_of_peroids: int = 10
+    ) -> List[Decimal]:
+        """
+        return a list with the market rates for the last number_of_periods records 
+        """
+
+        buy_posts = self.currency_from.exchange_conditions.filter(
+            operation_type="B"
+        )[:number_of_peroids]
+
+        sell_posts = self.currency_from.exchange_conditions.filter(
+            operation_type="S"
+        )[:number_of_peroids]
+        
+        market_prices_for_pair = []
+        for c_from, c_to in zip(buy_posts, sell_posts):
+            rate = c_from.price / c_to.price
+            market_prices_for_pair.append(
+                Decimal(rate).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
+            )
+
+        return market_prices_for_pair
 
     def get_market_rate_plus_optimum_margin(self) -> Decimal | None:
         if market_rate := self.get_market_rate():
@@ -142,7 +176,7 @@ class FiatExchangePair(TimeStampedModel):
             raise ValueError("No se pudo calcular un rate de mercado válido.")
 
         from_currency, to_currency = (
-            self.get_last_currency_exchange_conditions_pair_buy_sell()
+            self._get_last_currency_exchange_conditions_pair_buy_sell()
         )
 
         return FiatExchangePairRate.objects.create(
@@ -168,7 +202,7 @@ class FiatExchangePair(TimeStampedModel):
         #
         market_rate = self.get_market_rate()
         from_currency, to_currency = (
-            self.get_last_currency_exchange_conditions_pair_buy_sell()
+            self._get_last_currency_exchange_conditions_pair_buy_sell()
         )
 
         return FiatExchangeDummyPairRate.objects.create(

@@ -1,7 +1,13 @@
+from decimal import Decimal, ROUND_HALF_DOWN
 from django.utils import timezone as tz
+from django.core.management import call_command 
+
 from rest_framework.views import APIView
 from rest_framework.generics import (
     ListCreateAPIView,
+    ListAPIView,
+    GenericAPIView,
+    RetrieveAPIView,
     RetrieveUpdateAPIView
 )
 
@@ -10,6 +16,7 @@ from rest_framework import permissions
 from rest_framework import serializers, status
 from p2p.models import (
     Currency,
+    CurrencyExchangeConditions,
     FiatExchangePair,
     FiatExchangePairRate,
     ImageCoordinates,
@@ -116,3 +123,108 @@ class ImageCoordinatesView(APIView):
         images = ImageCoordinates.objects.all()
         serializer = ImageCoordinatesSerializer(images, many=True)
         return Response(serializer.data)
+
+class FiatExchangePairListAPIView(ListAPIView):
+    """
+    List FiatExchangePair for use to fetch specific FiatExchangePair's market data
+    """
+    queryset = FiatExchangePair.objects.all()
+
+    def get_serializer_class(self):
+        class JustInTimeSerializer(serializers.ModelSerializer):
+            currency_from = serializers.StringRelatedField()
+            currency_to = serializers.StringRelatedField()
+
+            class Meta:
+                model = FiatExchangePair
+                fields = ["id", "slug", "currency_from", "currency_to"]
+        return JustInTimeSerializer
+
+class FiatExchangePairMarketAPIView(RetrieveAPIView):
+    """
+    displays specific FiatExchangePair's market data
+    """
+    queryset = FiatExchangePair.objects.all()
+    lookup_field = "slug"
+
+    def post(self, request, *args, **kwargs):
+        pair = self.get_object()
+        if new_rate := request.data.get('newrate'):
+            pair.create_rate(new_rate)
+
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+    def get_serializer_class(self):
+        class JustInTimeSerializer(serializers.ModelSerializer):
+            currency_from = serializers.StringRelatedField()
+            currency_to = serializers.StringRelatedField()
+            market_rate = serializers.SerializerMethodField()
+            market_time = serializers.SerializerMethodField()
+            current_rate = serializers.SerializerMethodField()
+
+            sugested_rate = serializers.SerializerMethodField()
+            # optimum_margin_expected = serializers.DecimalField(max_digits=10, decimal_places=3, coerce_to_string=False)
+
+            class Meta:
+                model = FiatExchangePair
+                fields = "__all__"
+
+            def get_market_rate(self, obj):
+                return obj.get_market_rate()
+            
+            def get_sugested_rate(self, obj):
+                if optimum := obj.get_market_rate_plus_optimum_margin():
+                    return Decimal(optimum.quantize(
+                        Decimal("0.0000"), rounding=ROUND_HALF_DOWN
+                    ))
+
+            def get_market_time(self, obj):
+                buy, sell = obj._get_last_currency_exchange_conditions_pair_buy_sell()
+                if buy and sell:
+                    return {"buy_time":buy.created, "sell_time":sell.created}
+
+            def get_current_rate(self,obj):
+                return obj.last_rate.rate
+        
+        return JustInTimeSerializer
+
+class ReadMarketConditions(APIView):
+    def post(self, request, *args, **kwargs):
+        call_command("retrive_data_from_binance")
+        return Response(status=status.HTTP_200_OK)
+    
+
+
+    
+# class MarketAndCurrencyPairConditionsSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = 
+
+# class MarketAndCurrencyPairConditionsAPIView(APIView):
+#     """
+#     shows all trade conditions for currency
+#     """
+#     ## recuperar todos los pares de cambios
+#     for pair in FiatExchangePair.objects.all():
+        
+#         last_buys = CurrencyExchangeConditions.objects.filter(
+#             currency=pair.currency_from,
+#             conditions__operation_type=CurrencyExchangeConditions.OperationType.BUY
+#         )[:10]
+
+#         last_sells = CurrencyExchangeConditions.objects.filter(
+#             currency=pair.currency_from,
+#             conditions__operation_type=CurrencyExchangeConditions.OperationType.SELL
+#         )[:10]
+    
+    ### recuperar precio de mercado para el cambio con campos:
+    # get_market_rate_plus_optimum_margin
+    # get_market_rate
+        ### - hora del precio calculado
+
+    pass
+    # def get(self, request, *args, **kwargs):
+        
+        # FiatExchangePair.
