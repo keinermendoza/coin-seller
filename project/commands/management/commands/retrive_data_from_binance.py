@@ -26,7 +26,7 @@ class Command(BaseCommand):
                 data = p2p.extract_relevant_data(resp)
                 
                 if data:
-                    if data[1]:
+                    if len(data) > 1:
                         second_best_match = data[1]
                     else:
                         second_best_match = data[0]
@@ -67,7 +67,7 @@ class Command(BaseCommand):
 
                 data = p2p.extract_relevant_data(resp)
                 if data:
-                    if data[1]:
+                    if len(data) > 1:
                         second_best_match = data[1]
                     else:
                         second_best_match = data[0]

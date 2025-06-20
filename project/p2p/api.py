@@ -224,7 +224,7 @@ class ReadMarketConditions(APIView):
     # get_market_rate
         ### - hora del precio calculado
 
-    pass
+    # pass
     # def get(self, request, *args, **kwargs):
         
         # FiatExchangePair.

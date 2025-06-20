@@ -104,7 +104,7 @@ def extract_publisher_data(
     return publisher_dict
 
 
-def extract_relevant_data(data: Dict, **kwargs):
+def extract_relevant_data(data: Dict, **kwargs) -> List[dict]:
     relevant_data = []
     for item in data["data"]:
         item_data: Dict = extract_listing_data(item, **kwargs) | extract_publisher_data(
