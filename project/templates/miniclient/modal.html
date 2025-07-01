@@ -1,0 +1,161 @@
+<!-- Modal toggle -->
+<button id="button-open-modal" data-modal-target="select-modal" data-modal-toggle="select-modal" 
+class="w-fit underline underline-offset-4 text-green-800 hover:text-green-950" type="button">
+  Elegir otras monedas
+</button>
+
+<!-- Main modal -->
+<div id="select-modal" tabindex="-1" aria-hidden="true" class="hidden bg-black bg-opacity-70 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-screen max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Opciones de Cambio
+                </h3>
+                <button id="button-close-modal" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="select-modal">
+                    <svg class="w-3 h-3" ...>...</svg>
+                    <span class="sr-only">Cerrar modal</span>
+                </button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="p-4 md:p-5">
+                <p class="text-gray-500 dark:text-gray-400 mb-4">Elige el cambio que deseas</p>
+                <ul class="space-y-4 mb-4">
+                    {% for option in rates_dict %}
+                    <li>
+                        <input type="radio"
+                               id="option-{{ option.id }}"
+                               value="{{ option.id }}"
+                               name="selectedExchange"
+                               class="hidden peer exchange-option" />
+                        <label for="option-{{ option.id }}"
+                            class="inline-flex items-center justify-between w-full p-5 text-gray-900 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-500 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-900 hover:bg-gray-100 dark:text-white dark:bg-gray-600 dark:hover:bg-gray-500">
+                            <div class="w-full text-lg flex gap-1 items-center justify-between">
+                                <span>de</span>
+                                <div class="flex gap-1 items-center">
+                                    <img class="bg-gray-500 rounded-full shadow-lg object-fit size-8" src="{{ option.base_image }}" alt="" />
+                                    <span>{{ option.base_name }}</span>
+                                </div>
+                                <svg class="size-6" ...>...</svg>
+                                <span>a</span>
+                                <div class="flex gap-1 items-center">
+                                    <img class="bg-gray-500 rounded-full shadow-lg object-fit size-8" src="{{ option.target_image }}" alt="" />
+                                    <span>{{ option.target_name }}</span>
+                                </div>
+                            </div>
+                        </label>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+
+function transformDate(DateISO) {
+    const dateObject = new Date(DateISO);
+
+    const day = String(dateObject.getDate()).padStart(2, '0');
+    const month = String(dateObject.getMonth() + 1).padStart(2, '0'); 
+    const year = dateObject.getFullYear();
+
+    return `${day}/${month}/${year}`;
+}
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        // Open and Close modal
+        const btnOpenModal =  document.getElementById("button-open-modal");
+        const btnCloseModal =  document.getElementById("button-close-modal");
+        
+        const modalContainer = document.getElementById("select-modal");
+        
+        function toogleModalVisibility() {
+            modalContainer.classList.toggle('hidden');
+            modalContainer.classList.toggle('flex');
+        }
+
+        btnOpenModal.onclick = toogleModalVisibility;
+        btnCloseModal.onclick = toogleModalVisibility;
+
+        modalContainer.addEventListener("click", (e) => {
+            if (e.target === e.currentTarget) {
+                toogleModalVisibility();
+            }
+        });
+
+        // Calculate exchange value
+        let selectedExchange;
+        const exchangeData = JSON.parse(document.getElementById("exchanges-data").innerText);
+        const preselectedExchange = exchangeData.filter((exchage) => exchage.is_default)[0];
+        
+        selectedExchange = preselectedExchange;
+        
+        // fill reference data
+        const updated = document.getElementById("updated_at");
+        const baseSymbol = Array.from(document.getElementsByClassName("base_symbol"));
+        const baseAmount = document.getElementById("base_amount");
+        const baseImage = document.getElementById("base_image");
+
+        const targetSymbol = Array.from(document.getElementsByClassName("target_symbol"));
+        const targetAmount = document.getElementById("target_amount");
+        const targetImage = document.getElementById("target_image");
+
+        const baseInput = document.getElementById("base-currency-input");
+        const targetInput = document.getElementById("target-currency-input");
+
+        function fillReferenceData() {
+            updated.innerHTML = transformDate(selectedExchange.updated_at); 
+            baseSymbol.forEach(spanEl => spanEl.innerHTML = selectedExchange.base_symbol);
+            baseAmount.innerHTML =  parseFloat(selectedExchange.base_amount); 
+            targetSymbol.forEach(spanEl => spanEl.innerHTML = selectedExchange.target_symbol);
+            targetAmount.innerHTML =  parseFloat(selectedExchange.target_amount);
+            baseImage.src = selectedExchange.base_image;
+            targetImage.src = selectedExchange.target_image;
+        
+            baseInput.value = parseFloat(selectedExchange.base_amount);
+            targetInput.value = parseFloat(selectedExchange.target_amount);
+        }
+
+        fillReferenceData();
+ 
+        // calculate 
+        baseInput.oninput = () => {
+            const value = Math.floor(selectedExchange.rate * parseFloat(baseInput.value) * 1000) / 1000;  
+            targetInput.value = value;
+        }
+
+        targetInput.oninput = () => {
+            const value = Math.floor(parseFloat(targetInput.value) / selectedExchange.rate  * 1000) / 1000;  
+            baseInput.value = value;
+        }
+
+
+        // create exchange options 
+
+        // listen for select option
+        const exchageOptions = Array.from(document.getElementsByClassName('exchange-option'));
+
+        exchageOptions.forEach(option => {
+            option.addEventListener("change", function() {
+                if(this.checked) {
+                    const exchangeId = this.value;
+
+                    selectedExchange = exchangeData.filter((exchage) => exchage.id == exchangeId)[0];
+                    fillReferenceData();
+                    toogleModalVisibility();
+
+                }
+            });
+        });
+    
+    })
+</script>

@@ -24,5 +24,5 @@ urlpatterns = [
     ),
     path("api/images", api.ImageCoordinatesView.as_view(), name="images"),
     re_path(r"^client.*$", views.ClientView.as_view(), name="react_client"),
-    path("", RedirectView.as_view(url="client", permanent=False)),
+    # path("", RedirectView.as_view(url="client", permanent=False)),
 ]

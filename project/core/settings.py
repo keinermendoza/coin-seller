@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "p2p.apps.P2PConfig",
+    "p2p",
     "commands",
     "tasks",
     "django_extensions",
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "image_creation",
+    "miniclient",
 ]
 
 MIDDLEWARE = [
