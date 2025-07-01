@@ -233,3 +233,7 @@ AUTHENTICATION_BACKENDS = [
 
 ACCOUNT_ADAPTER = "p2p.adapters.NoSignupAccountAdapter"
 LOGIN_REDIRECT_URL = reverse_lazy("p2p.react_client")
+
+# https://stackoverflow.com/questions/62047354/build-absolute-uri-with-https-behind-reverse-proxy
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
